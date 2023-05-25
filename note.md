@@ -24,3 +24,5 @@ http://localhost:9529/dev-api/admin/product/attrInfoList/1/1/1
 
 5.24 62
 
+5.25 69
+

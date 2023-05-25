@@ -11,3 +11,7 @@ export const reqCancel = (skuId) => request({ url: `/dev1-api/admin/product/canc
 //上架
 // /admin/product/onSale/{skuId}
 export const reqSale = (skuId) => request({ url: `/dev1-api/admin/product/onSale/${skuId}`, method: 'get' })
+
+//获取SKU详情的接口
+///admin/product/getSkuById/{skuId}  get
+export const reqSkuById = (skuId)=>request({url:`/dev1-api/admin/product/getSkuById/${skuId}`,method:'get'});

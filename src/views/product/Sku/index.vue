@@ -24,6 +24,39 @@
     <!-- 分页          -->
     <el-pagination @size-change="handleSizeChange" @current-change="getSkuList" style="text-align: center" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
     </el-pagination>
+
+    <!-- 抽屉 -->
+    <el-drawer :visible.sync="show" :show-close="false" size="50%" style="height: 100%;">
+      <!-- 名称 -->
+      <el-row>
+        <el-col :span="5">名称</el-col>
+        <el-col :span="16">{{ skuInfo.skuName }}</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="5">名称</el-col>
+        <el-col :span="16">{{ skuInfo.skuDesc }}</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="5">价格</el-col>
+        <el-col :span="16">{{ skuInfo.price }}</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="5">平台属性</el-col>
+        <el-col :span="16">
+          <el-tag type="success" v-for="attr in skuInfo.skuAttrValueList" :key="attr.id" style="margin-right:10px">{{ attr.attrId }} - {{ attr.valueId }}</el-tag>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="5">商品图片</el-col>
+        <el-col :span="16">
+          <el-carousel height="250px">
+            <el-carousel-item v-for="item in skuInfo.skuImageList" :key="item.id">
+              <img :src="item.imgUrl" alt="" style="width: 100%;height: 100%;">
+            </el-carousel-item>
+          </el-carousel>
+        </el-col>
+      </el-row>
+    </el-drawer>
   </div>
 </template>
 
@@ -35,6 +68,8 @@ export default {
       limit: 5,
       total: 0,
       records: [],
+      skuInfo: {}, //存储SKU信息
+      show: false,
     }
   },
   methods: {
@@ -42,12 +77,10 @@ export default {
     async getSkuList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      console.log(page, limit)
       const res = await this.$API.sku.reqSkuList(page, limit)
       if (res.code === 200) {
         this.total = res.data.total
         this.records = res.data.records
-        console.log(res)
       }
     },
     //分页器
@@ -77,10 +110,14 @@ export default {
       }
     },
     edit() {
-      console.log('edit')
+      this.$message('正在开发中')
     },
-    getSkuInfo(row) {
-      console.log(row)
+    async getSkuInfo(row) {
+      this.show = true
+      let res = await this.$API.sku.reqSkuById(row.id)
+      if (res.code == 200) {
+        this.skuInfo = res.data
+      }
     },
   },
   mounted() {
@@ -90,4 +127,40 @@ export default {
 </script>
 
 <style>
+.el-carousel__item h3 {
+  color: #475669;
+  font-size: 14px;
+  opacity: 0.75;
+  line-height: 150px;
+  margin: 0;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
+}
+>>> .el-carousel__button {
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+}
+</style>
+
+<style lang="less" scoped>
+.el-row {
+  font-size: 18px;
+  // text-align: right;
+  .el-col {
+    margin: 10px 10px;
+  }
+  .el-col-5 {
+    font-size: 18px;
+    text-align: right;
+  }
+}
+
 </style>
