@@ -31,7 +31,8 @@ export default {
       'sidebar'
     ]),
     routes() {
-      return this.$router.options.routes
+      //计算全部路由
+      return this.$store.state.user.resultAllRoutes
     },
     activeMenu() {
       const route = this.$route

@@ -28,3 +28,8 @@ http://localhost:9529/dev-api/admin/product/attrInfoList/1/1/1
 
 5.27 84 <div slot="header" class="header">  下划线
 
+5.28 完结
+组件通信
+路由
+接口（mock）token
+组件库

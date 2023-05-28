@@ -10,13 +10,17 @@
 import Card from './Card'
 import Sale from './Sale'
 import Observe from './Observe'
+
 export default {
   name: 'Dashboard',
-  components:{
+  components: {
     Card,
     Sale,
-    Observe
-  }
+    Observe,
+  },
+  mounted() {
+    this.$store.dispatch('getData')
+  },
 }
 </script>
 
