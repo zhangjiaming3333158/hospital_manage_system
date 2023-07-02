@@ -7,6 +7,7 @@ Vue.use(Router)
 
 /* 引入最外层骨架的一级路由组件*/
 import Layout from '@/layout'
+import { path } from 'express/lib/application'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -34,18 +35,25 @@ import Layout from '@/layout'
 //常量路由:就是不关用户是什么角色，都可以看见的路由
 //什么角色（超级管理员，普通员工）：登录、404、首页
 export const constantRoutes = [
+  //login
   {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true,
   },
-
+  //register
+  {
+    path: '/register',
+    component: () => import('@/views/register/index'),
+    hidden: true,
+  },
+  //404
   {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true,
   },
-
+  //首页
   {
     path: '/',
     component: Layout,
@@ -56,6 +64,106 @@ export const constantRoutes = [
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index'),
         meta: { title: '首页', icon: 'dashboard' },
+      },
+    ],
+  },
+  //个人中心
+  {
+    path: '/doctor',
+    component: Layout,
+    name: 'Doctor',
+    // redirect: '/acl/user/list',
+    meta: { title: '医生管理', icon: 'el-icon-s-custom' },
+    children: [
+      // {
+      //   path: 'addDoctor',
+      //   name: 'addDoctor',
+      //   component: () => import('@/views/doctor/addDoctor'),
+      //   meta: { title: '增加医生信息' },
+      // },
+      {
+        path: 'editDoctor',
+        name: 'editDoctor',
+        component: () => import('@/views/doctor/editDoctor'),
+        meta: { title: '编辑医生信息' },
+      },
+      // {
+      //   path: 'shiftDoctor',
+      //   name: 'shiftDoctor',
+      //   component: () => import('@/views/doctor/shiftDoctor'),
+      //   meta: { title: '轮班' },
+      // },
+      // {
+      //   path: 'staffFlow',
+      //   name: 'staffFlow',
+      //   component: () => import('@/views/doctor/staffFlow'),
+      //   meta: { title: '人员流动信息' },
+      // },
+    ],
+  },
+  //科室
+  {
+    path: '/department',
+    component: Layout,
+    name: 'Department',
+    // redirect: '/department',
+    meta: { title: '科室管理', icon: 'el-icon-s-tools' },
+    children: [
+      {
+        path: 'editdepartment',
+        name: 'editDepartment',
+        component: () => import('@/views/department/editDepartment'),
+        meta: { title: '编辑科室信息' },
+      },
+      {
+        path: 'showdepartment',
+        name: 'showDepartment',
+        component: () => import('@/views/department/showDepartment'),
+        meta: { title: '查看科室信息' },
+      },
+    ],
+  },
+  //诊室
+  {
+    path: '/clinic',
+    name: 'Clinic',
+    component: Layout,
+    // redirect: '/visit',
+    meta: { title: '诊室管理', icon: 'el-icon-first-aid-kit' },
+    children: [
+      {
+        path: 'editclinic',
+        name: 'editClinic',
+        component: () => import('@/views/clinic/editClinic'),
+        meta: { title: '编辑诊室信息' },
+      },
+      {
+        path: 'showclinic',
+        name: 'showClinic',
+        component: () => import('@/views/clinic/showClinic'),
+        meta: { title: '查看诊室信息' },
+      },
+    ],
+  },
+  //出诊
+  {
+    path: '/consult',
+    name: 'Consult',
+    component: Layout,
+    // redirect: '/consult',
+    meta: { title: '出诊管理', icon: 'el-icon-s-home' },
+    children: [
+      {
+        path: 'editconsult',
+        name: 'editConsult',
+        component: () => import('@/views/consult/editConsult'),
+        meta: { title: '编辑出诊信息' },
+      },
+      {
+        path: 'showconsult',
+        name: 'showConsult',
+        component: () => import('@/views/consult/showConsult'),
+        meta: { title: '查看出诊信息' },
       },
     ],
   },
@@ -107,58 +215,6 @@ export const asyncRoutes = [
         meta: {
           title: '菜单管理',
         },
-      },
-    ],
-  },
-  {
-    path: '/product',
-    component: Layout,
-    name: 'Product',
-    meta: { title: '商品管理', icon: 'el-icon-goods' },
-    children: [
-      {
-        path: 'trademark',
-        name: 'TradeMark',
-        component: () => import('@/views/product/tradeMark'),
-        meta: { title: '品牌管理' },
-      },
-      {
-        path: 'attr',
-        name: 'Attr',
-        component: () => import('@/views/product/Attr'),
-        meta: { title: '平台属性管理' },
-      },
-      {
-        path: 'spu',
-        name: 'Spu',
-        component: () => import('@/views/product/Spu'),
-        meta: { title: 'Spu管理' },
-      },
-      {
-        path: 'sku',
-        name: 'Sku',
-        component: () => import('@/views/product/Sku'),
-        meta: { title: 'Sku管理' },
-      },
-    ],
-  },
-  {
-    path: '/test',
-    component: Layout,
-    name: 'Test',
-    meta: { title: '测试管理', icon: 'el-icon-goods' },
-    children: [
-      {
-        path: 'test1',
-        name: 'Test1',
-        component: () => import('@/views/Test/Test1'),
-        meta: { title: '测试管理1' },
-      },
-      {
-        path: 'test2',
-        name: 'Test2',
-        component: () => import('@/views/Test/Test2'),
-        meta: { title: '测试管理2' },
       },
     ],
   },

@@ -4,16 +4,30 @@
 
       <div class="title-container">
         <el-row>
-          <el-row>
-            <el-col :span="12">
-              <h3 class="title active">医生登录</h3>
-            </el-col>
-            <el-col :span="12">
-              <h3 class="title">管理员登录</h3>
-            </el-col>
-          </el-row>
+          <h3 class="title">注册</h3>
         </el-row>
       </div>
+
+      <el-form-item prop="doctorName">
+        <span class="svg-container">
+          <!-- <svg-icon icon-class="user" /> -->
+        </span>
+        <el-input ref="doctorName" v-model="loginForm.doctorName" placeholder="医生姓名" name="doctorName" type="text" tabindex="1" auto-complete="on" />
+      </el-form-item>
+
+      <el-form-item prop="doctorSex">
+        <span class="svg-container">
+          <!-- <svg-icon icon-class="user" /> -->
+        </span>
+        <el-input ref="doctorSex" v-model="loginForm.doctorSex" placeholder="医生性别" name="doctorSex" type="text" tabindex="1" auto-complete="on" />
+      </el-form-item>
+
+      <el-form-item prop="doctorBirthday">
+        <span class="svg-container">
+          <!-- <svg-icon icon-class="user" /> -->
+        </span>
+        <el-input ref="doctorBirthday" v-model="loginForm.doctorBirthday" placeholder="医生生日" name="doctorBirthday" type="text" tabindex="1" auto-complete="on" />
+      </el-form-item>
 
       <el-form-item prop="username">
         <span class="svg-container">
@@ -32,8 +46,9 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
-      <el-button style="width:100%;margin:0 0 30px 0;" @click="$router.push({path:'/register'})">注册</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;">注册</el-button>
+
+      <el-button :loading="loading" style="width:100%;margin:0 0 30px 0;" @click="$router.push({path:'/login'})">登录</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;">用户名: phoneNumber</span>
@@ -216,16 +231,20 @@ $light_gray: #eee;
     text-align: center;
 
     .title {
-      display: inline-block;
-      font-size: 30px;
+      font-size: 26px;
       color: $light_gray;
-      margin: 0 auto 40px auto;
+      margin: 0 auto 10px auto;
+      text-align: center;
+      font-weight: bold;
+    }
+    .title2 {
+      margin: 0 auto 20px auto;
       text-align: center;
       font-weight: bold;
     }
     .active {
-      border-bottom: 5px solid #409eff;
-      color: #409eff;
+      background-color: #409eff;
+      color: #fff;
     }
   }
 
@@ -239,12 +258,12 @@ $light_gray: #eee;
     user-select: none;
   }
 
-  // .zhuce{
-  //   // float: right;
-  //   font-size: 16px;
-  //   cursor: pointer;
-  //   user-select: none;
-  // }
+  .denglu {
+    float: right;
+    font-size: 16px;
+    color: #409eff;
+    cursor: pointer;
+    user-select: none;
+  }
 }
 </style>
-
