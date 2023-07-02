@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-card class="box-card">
-      <el-form inline>
+      <el-form inline style="text-align: center;">
         <!-- 表单元素 -->
         <el-form-item>
-          <el-input v-model="tempSearchObj.username" placeholder="用户名" />
+          <el-input style="width: 300px;" v-model="tempSearchObj.username" placeholder="用户名" />
         </el-form-item>
         <!-- 查询与情况的按钮 -->
         <el-button type="primary" icon="el-icon-search" @click="search">查询</el-button>
@@ -12,7 +12,7 @@
       </el-form>
       <div v-show="showTable">
         <!-- 按钮 -->
-        <el-table style="width: 100%" border :data="attrList">
+        <el-table style="width: 100%" border :data="clinicList">
           <!-- 序号 -->
           <el-table-column type="index" label="序号" width="80px" align="center">
           </el-table-column>
@@ -25,19 +25,6 @@
           <!-- 诊室所在科室 -->
           <el-table-column prop="belongingDepartment" label="诊室所属" width="160px">
           </el-table-column>
-          <!-- 品牌LOGO -->
-          <!-- <el-table-column prop="" label="属性值" width="width">
-            <template slot-scope="{ row }">
-              <el-tag size="mini" type="success" v-for="attrValue in row.attrValueList" :key="attrValue.id" style="margin: 0px 10px">{{ attrValue.valueName }}</el-tag>
-            </template>
-          </el-table-column> -->
-          <!-- 操作 -->
-          <!-- <el-table-column prop="" label="操作" width="200px">
-            <template slot-scope="{row}">
-              <el-button type="warning" icon="el-icon-edit" size="mini" @click="updataAttr(row)">修改</el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
-            </template>
-          </el-table-column> -->
         </el-table>
       </div>
 
@@ -63,22 +50,60 @@ export default {
         // 收集搜索条件输入的对象
         username: '',
       },
-      
-      id1: '',
-      id2: '',
-      id3: '',
-      attrList: [],
+      //表格数据
+      clinicList: [
+        {
+          clinicName: '诊室1',
+          clinicIntroduce: '诊室1介绍',
+          belongingDepartment: '科室1',
+        },
+        {
+          clinicName: '诊室2',
+          clinicIntroduce: '诊室2介绍',
+          belongingDepartment: '科室2',
+        },
+        {
+          clinicName: '诊室3',
+          clinicIntroduce: '诊室3介绍',
+          belongingDepartment: '科室3',
+        },
+      ],
       showTable: true,
-      //收集新增属性|修改属性使用的
-      attrInfo: {
-        attrName: '', //属性名
-        attrValueList: [
-          //属性值，因为属性值可以有多个因此用数组，每一个属性值都是一个对象需要attrId，valueName
-        ],
-        categoryId: 0, //三级分类的id
-        categoryLevel: 3, //因为服务器也需要区分几级id
-      },
     }
+  },
+  methods: {
+    //获取表格数据
+    async getClinicList(pages = 1) {
+      this.page = pages
+      const { page, limit } = this
+      let res = await this.$API.clinic.getClinic(page, limit)
+      console.log(res)
+      // if (res.code === 200) {
+      //   this.clinicList = res.data
+      // }
+    },
+    //搜索
+    async search(pages = 1) {
+      this.page = pages
+      const { page, limit } = this
+      const searchObj = this.tempSearchObj.username
+      let res = await this.$API.clinic.searchClinic(
+        page,
+        limit,
+        searchObj
+      )
+      console.log(res)
+      // if (res.code === 200) {
+      //   this.clinicList = res.data
+      // }
+    },
+    //清空
+    resetSearch() {
+      this.tempSearchObj.username = ''
+    },
+  },
+  mounted() {
+    this.getClinicList()
   },
 }
 </script>

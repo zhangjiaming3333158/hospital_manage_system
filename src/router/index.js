@@ -187,17 +187,17 @@ export const asyncRoutes = [
         path: 'user/list',
         component: () => import('@/views/acl/user/list'),
         meta: {
-          title: '用户管理',
+          title: '权限管理',
         },
       },
-      {
-        name: 'Role',
-        path: 'role/list',
-        component: () => import('@/views/acl/role/list'),
-        meta: {
-          title: '角色管理',
-        },
-      },
+      // {
+      //   name: 'Role',
+      //   path: 'role/list',
+      //   component: () => import('@/views/acl/role/list'),
+      //   meta: {
+      //     title: '角色管理',
+      //   },
+      // },
       {
         name: 'RoleAuth',
         path: 'role/auth/:id',
@@ -207,14 +207,6 @@ export const asyncRoutes = [
           title: '角色授权',
         },
         hidden: true,
-      },
-      {
-        name: 'Permission',
-        path: 'permission/list',
-        component: () => import('@/views/acl/permission/list'),
-        meta: {
-          title: '菜单管理',
-        },
       },
     ],
   },

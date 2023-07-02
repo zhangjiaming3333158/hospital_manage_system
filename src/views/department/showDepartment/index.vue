@@ -7,7 +7,7 @@
           <el-input v-model="tempSearchObj.username" placeholder="用户名" />
         </el-form-item>
         <!-- 查询与情况的按钮 -->
-        <el-button type="primary" icon="el-icon-search" @click="search">查询</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="search()">查询</el-button>
         <el-button type="default" @click="resetSearch">清空</el-button>
       </el-form>
       <div v-show="showTable">
@@ -29,39 +29,6 @@
       <el-pagination style="text-align: center" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
       </el-pagination>
 
-      <div v-show="!showTable">
-        <!-- 行内表单 -->
-        <el-form :inline="true">
-          <el-form-item label="属性名">
-            <el-input placeholder="请输入属性名" v-model="attrInfo.attrName"></el-input>
-          </el-form-item>
-        </el-form>
-        <el-button type="primary" icon="el-icon-plus" :disabled="!attrInfo.attrName" @click="addAttrValue">添加属性值</el-button>
-        <el-button>取消</el-button>
-        <el-table style="width: 100%; margin: 10px 0;" border :data="attrInfo.attrValueList">
-          <!-- 序号 -->
-          <el-table-column type="index" label="序号" width="80px" align="center">
-          </el-table-column>
-          <!-- 属性名称 -->
-          <el-table-column prop="attrName" label="属性名" width="width">
-            <template slot-scope="{ row ,$index }">
-              <!-- 这里结构需要用到span与input进行来回的切换 -->
-              <el-input v-model="row.valueName" placeholder="请输入属性值名称" size="mini" v-if="row.flag" @blur="toLook(row)" @keyup.native.enter="toLook(row)" :ref="$index"></el-input>
-              <span v-else @click="toEdit(row,$index)" style="display: block">{{ row.valueName }}</span>
-            </template>
-          </el-table-column>
-          <!-- 操作 -->
-          <el-table-column prop="" label="操作" width="200px">
-            <template slot-scope="{row}">
-              <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteButton(row)">
-                <el-button type="danger" icon="el-icon-delete" size="mini" slot="reference">删除</el-button>
-              </el-popconfirm>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-button type="primary" icon="el-icon-plus" @click="addOrupdataAttr" :disabled="attrInfo.attrValueList.length<1">保存</el-button>
-        <el-button @click="deleteshowTable">取消</el-button>
-      </div>
     </el-card>
   </div>
 </template>
@@ -74,7 +41,6 @@ export default {
       page: 1,
       limit: 5,
       total: 0,
-
       //搜索条件
       tempSearchObj: {
         // 收集搜索条件输入的对象
@@ -103,14 +69,48 @@ export default {
       },
     }
   },
+  methods: {
+    //获取表格数据
+    async getDepartmentList(pages = 1) {
+      this.page = pages
+      const { page, limit } = this
+      let res = await this.$API.department.getDepartment(page, limit)
+      console.log(res)
+      // if (res.code === 200) {
+      //   this.departmentList = res.data
+      // }
+    },
+    //搜索
+    async search(pages = 1) {
+      this.page = pages
+      const { page, limit } = this
+      const searchObj = this.tempSearchObj.username
+      let res = await this.$API.department.searchDepartment(
+        page,
+        limit,
+        searchObj
+      )
+      console.log(res)
+      // if (res.code === 200) {
+      //   this.departmentList = res.data
+      // }
+    },
+    //清空
+    resetSearch() {
+      this.tempSearchObj.username = ''
+    },
+  },
+  mounted(){
+    this.getDepartmentList()
+  }
 }
 </script>
 
 <style lang="less" scoped>
-.box-card{
-  .el-form{
-    .el-form-item{
-      .el-input{
+.box-card {
+  .el-form {
+    .el-form-item {
+      .el-input {
         width: 300px;
       }
     }
