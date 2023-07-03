@@ -24,6 +24,7 @@ import { mapGetters } from 'vuex'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
+import router from '@/router'
 
 export default {
   components: { SidebarItem, Logo },
@@ -34,7 +35,8 @@ export default {
     //应该替换为仓库中已经计算好的需要展示的全部路由
     routes() {
       //sliderbar：需要遍历的应该是仓库计算完毕的全部路由
-      return this.$store.state.user.resultAllRputes;
+      // return this.$store.state.user.resultAllRputes;
+      return router.options.routes;
     },
     activeMenu() {
       const route = this.$route

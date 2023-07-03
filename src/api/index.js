@@ -6,6 +6,7 @@ import * as department from './hospital/department'
 import * as clinic from './hospital/clinic'
 import * as consult from './hospital/consult'
 import * as doctor from './hospital/doctor'
+import * as hospitalUser from './hospital/user'
 
 export default {
   permission,
@@ -14,5 +15,6 @@ export default {
   department,
   clinic,
   consult,
-  doctor
+  doctor,
+  hospitalUser
 }

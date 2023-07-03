@@ -12,6 +12,10 @@
           <el-button type="primary" icon="el-icon-search" @click="search()">查询</el-button>
           <el-button type="default" @click="resetSearch">清空</el-button>
         </el-form>
+        <div style="margin-bottom: 20px">
+          <!-- 添加与批量添加按钮 -->
+          <el-button type="success" icon="el-icon-edit" @click="showAddUser">修改个人信息</el-button>
+        </div>
         <!-- 表格 -->
         <el-table :data="doctorList" border style="width: 100%;">
           <el-table-column fixed prop="index" label="序号" width="50">
@@ -27,20 +31,18 @@
           </el-table-column>
           <el-table-column fixed prop="phoneNumber" label="手机号" width="150">
           </el-table-column>
-          <el-table-column fixed prop="appointmentfee" label="薪水" width="100">
-          </el-table-column>
           <el-table-column fixed prop="introduce" label="介绍" width="width">
           </el-table-column>
-          <el-table-column fixed prop="office" label="科室" width="100">
+          <el-table-column fixed prop="office" label="科室" width="150">
           </el-table-column>
-          <el-table-column prop="" label="操作" width="200px">
+          <!-- <el-table-column prop="" label="操作" width="200px">
             <template slot-scope="{row}">
               <el-button type="warning" icon="el-icon-edit" size="mini" @click="updataAttr(row)">修改</el-button>
               <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteAttr(row)">
                 <el-button style="margin-left: 10px;" type="danger" icon="el-icon-delete" size="mini" slot="reference">删除</el-button>
               </el-popconfirm>
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
         <!-- 分页   @size-change="handleSizeChange" @current-change="getSkuList"      -->
         <el-pagination style="text-align: center" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
@@ -65,10 +67,6 @@
 
           <el-form-item label="医生手机号">
             <el-input placeholder="请输入医生手机号" v-model="doctorInfo.phoneNumber"></el-input>
-          </el-form-item>
-
-          <el-form-item label="医生薪水">
-            <el-input placeholder="请输入医生薪水" v-model="doctorInfo.appointmentfee"></el-input>
           </el-form-item>
 
           <el-form-item label="医生介绍">

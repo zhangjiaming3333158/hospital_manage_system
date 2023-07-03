@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-card class="box-card">
+      <span class="tittle">科室</span>信息表</span>
       <el-form inline style="text-align: center;">
         <!-- 表单元素 -->
         <el-form-item>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-card class="box-card">
-
       <div v-show="showTable">
+        <span class="tittle">科室信息表</span>
         <el-form inline style="text-align: center;">
           <!-- 表单元素 -->
           <el-form-item>
@@ -32,14 +32,9 @@
             <template slot-scope="{row}">
               <el-button type="warning" icon="el-icon-edit" size="mini" @click="updataAttr(row)">修改</el-button>
 
-              <el-popover placement="top" width="160" v-model="visible">
-                <p> 确定删除这一段内容吗？</p>
-                <div style="text-align: right; margin: 0">
-                  <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-                  <el-button type="primary" size="mini" @click="deleteAttr(row)">确定</el-button>
-                </div>
-                <el-button trigger style="margin-left: 10px;" slot="reference" type="danger" icon="el-icon-delete" size="mini">删除</el-button>
-              </el-popover>
+              <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteAttr(row)">
+                <el-button style="margin-left: 10px;" type="danger" icon="el-icon-delete" size="mini" slot="reference">删除</el-button>
+              </el-popconfirm>
 
             </template>
           </el-table-column>
@@ -51,17 +46,15 @@
 
       <div v-show="!showTable">
         <!-- 行内表单 -->
-        <el-form :inline="true" v-show="!showId">
+        <el-form :label-position="right" label-width="100px" v-show="!showId">
           <el-form-item label="科室编号">
             {{ departmentInfo.departmentNameId }}
           </el-form-item>
-        </el-form>
-        <el-form :inline="true">
+
           <el-form-item label="科室名称">
             <el-input placeholder="请输入科室名称" v-model="departmentInfo.departmentName"></el-input>
           </el-form-item>
-        </el-form>
-        <el-form :inline="true">
+
           <el-form-item label="科室介绍">
             <el-input style="width: 400px;" type="textarea" :rows="4" placeholder="请输入科室名称" v-model="departmentInfo.departmentIntroduce"></el-input>
           </el-form-item>
@@ -77,6 +70,7 @@
 export default {
   data() {
     return {
+      right: 'right', //表单对齐方式
       //弹出框
       visible: false,
       //分页
@@ -151,14 +145,13 @@ export default {
       this.showTable = false
       this.showId = false
       this.departmentInfo.departmentNameId = row.departmentNameId
+      this.departmentInfo.departmentName = row.departmentName
+      this.departmentInfo.departmentIntroduce = row.departmentintroduce
     },
     //修改或删除
     async addOrupdataAttr() {
       if (this.departmentInfo.departmentNameId != '') {
-        let res = await this.$API.department.editDepartment(
-          this.departmentInfo,
-          this.departmentInfo.departmentNameId
-        )
+        let res = await this.$API.department.editDepartment(this.departmentInfo)
         console.log(res)
         // if (res.code === 200) {
         //   this.departmentList = res.data

@@ -6,10 +6,10 @@
         <el-row>
           <el-row>
             <el-col :span="12">
-              <h3 class="title active">医生登录</h3>
+              <h3 class="title" :class="{'active':onShow}" @click="onShowChange">医生登录</h3>
             </el-col>
             <el-col :span="12">
-              <h3 class="title">管理员登录</h3>
+              <h3 class="title" :class="{'active':offShow}" @click="offShowChange">管理员登录</h3>
             </el-col>
           </el-row>
         </el-row>
@@ -32,6 +32,7 @@
         </span>
       </el-form-item>
 
+       <!--  @click="setItem -->
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
       <el-button style="width:100%;margin:0 0 30px 0;" @click="$router.push({path:'/register'})">注册</el-button>
 
@@ -65,6 +66,8 @@ export default {
       }
     }
     return {
+      onShow: true,
+      offShow: false,
       loginForm: {
         username: 'admin',
         password: '111111',
@@ -91,6 +94,10 @@ export default {
     },
   },
   methods: {
+    // setItem(){
+    //   localStorage.setItem('UUID', 1)
+    //   this.$router.push({ path: this.redirect || '/' })
+    // },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -119,6 +126,49 @@ export default {
           return false
         }
       })
+    },
+    // 登录
+    login() {
+      if (onShow) {
+        this.$refs.loginForm.validate(async (valid) => {
+          if (valid) {
+            this.loading = true
+            const res = await this.$API.hospitalUser.doctorLogin(this.loginForm)
+            if (res.code == 200) {
+              console.log(res)
+              localStorage.setItem('UUID', res.data.uuid);
+              this.$router.push({ path: this.redirect || '/' })
+              this.loading = false
+            }
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      } else {
+        this.$refs.loginForm.validate(async (valid) => {
+          if (valid) {
+            this.loading = true
+            const res = await this.$API.hospitalUser.doctorSignup(this.loginForm)
+            if (res.code == 200) {
+              console.log(res)
+              this.$router.push({ path: this.redirect || '/' })
+              this.loading = false
+            }
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      }
+    },
+    onShowChange() {
+      this.onShow = true
+      this.offShow = false
+    },
+    offShowChange() {
+      this.onShow = false
+      this.offShow = true
     },
   },
 }
@@ -222,6 +272,7 @@ $light_gray: #eee;
       margin: 0 auto 40px auto;
       text-align: center;
       font-weight: bold;
+      cursor: pointer;
     }
     .active {
       border-bottom: 5px solid #409eff;

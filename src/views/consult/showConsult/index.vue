@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-card class="box-card">
+      <span class="tittle">出诊信息表</span>
       <el-form inline style="text-align: center;">
         <!-- 表单元素 -->
         <el-form-item>
@@ -90,6 +91,9 @@ export default {
     resetSearch() {
       this.tempSearchObj.username = ''
     },
+  },
+  mounted() {
+    this.getConsultList()
   },
 }
 </script>

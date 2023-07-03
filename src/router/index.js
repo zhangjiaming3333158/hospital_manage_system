@@ -75,30 +75,18 @@ export const constantRoutes = [
     // redirect: '/acl/user/list',
     meta: { title: '医生管理', icon: 'el-icon-s-custom' },
     children: [
-      // {
-      //   path: 'addDoctor',
-      //   name: 'addDoctor',
-      //   component: () => import('@/views/doctor/addDoctor'),
-      //   meta: { title: '增加医生信息' },
-      // },
+      {
+        path: 'showDoctor',
+        name: 'showDoctor',
+        component: () => import('@/views/doctor/showDoctor'),
+        meta: { title: '医生信息' },
+      },
       {
         path: 'editDoctor',
         name: 'editDoctor',
         component: () => import('@/views/doctor/editDoctor'),
         meta: { title: '编辑医生信息' },
       },
-      // {
-      //   path: 'shiftDoctor',
-      //   name: 'shiftDoctor',
-      //   component: () => import('@/views/doctor/shiftDoctor'),
-      //   meta: { title: '轮班' },
-      // },
-      // {
-      //   path: 'staffFlow',
-      //   name: 'staffFlow',
-      //   component: () => import('@/views/doctor/staffFlow'),
-      //   meta: { title: '人员流动信息' },
-      // },
     ],
   },
   //科室

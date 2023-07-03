@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-card class="box-card">
-
       <div v-show="showTable">
+        <span class="tittle">出诊信息表</span>
         <el-form inline style="text-align: center;">
           <!-- 表单元素 -->
           <el-form-item>
@@ -34,14 +34,11 @@
           <el-table-column prop="" label="操作" width="200px">
             <template slot-scope="{row}">
               <el-button type="warning" icon="el-icon-edit" size="mini" @click="updataAttr(row)">修改</el-button>
-              <el-popover placement="top" width="160" v-model="visible">
-                <p> 确定删除这一段内容吗？</p>
-                <div style="text-align: right; margin: 0">
-                  <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-                  <el-button type="primary" size="mini" @click="deleteAttr(row)">确定</el-button>
-                </div>
-                <el-button trigger style="margin-left: 10px;" slot="reference" type="danger" icon="el-icon-delete" size="mini">删除</el-button>
-              </el-popover>
+
+              <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteAttr(row)">
+                <el-button style="margin-left: 10px;" type="danger" icon="el-icon-delete" size="mini" slot="reference">删除</el-button>
+              </el-popconfirm>
+
             </template>
           </el-table-column>
         </el-table>
@@ -52,25 +49,25 @@
 
       <div v-show="!showTable">
         <!-- 行内表单 -->
-        <el-form :inline="true" v-show="!showId">
+        <el-form :label-position="right" label-width="100px" v-show="!showId">
           <el-form-item label="医生编号">
             {{ consultInfo.doctorId }}
           </el-form-item>
-        </el-form>
-        <el-form :inline="true">
+
           <el-form-item label="医生姓名">
             <el-input placeholder="请输入医生姓名" v-model="consultInfo.doctorName"></el-input>
           </el-form-item>
-        </el-form>
-        <el-form :inline="true">
+
           <el-form-item label="出诊开始时间">
-            <el-input placeholder="请输入出诊开始时间" v-model="consultInfo.consultBegin"></el-input>
+            <el-date-picker style="width: 350px;" v-model="consultInfo.consultBegin" type="datetime" placeholder="出诊开始时间" format="yyyy 年 MM 月 dd 日 hh 时 mm 分 ss 秒" value-format="yyyy-MM-dd hh-mm-ss">
+            </el-date-picker>
           </el-form-item>
-        </el-form>
-        <el-form :inline="true">
+
           <el-form-item label="出诊结束时间">
-            <el-input placeholder="请输入出诊结束时间" v-model="consultInfo.consultEnd"></el-input>
+            <el-date-picker style="width: 350px;" v-model="consultInfo.consultEnd" type="datetime" placeholder="出诊开始时间" format="yyyy 年 MM 月 dd 日 hh 时 mm 分 ss 秒" value-format="yyyy-MM-dd hh-mm-ss">
+            </el-date-picker>
           </el-form-item>
+
         </el-form>
 
         <el-button type="primary" icon="el-icon-plus" @click="addOrupdataAttr" :disabled="consultInfo.doctorName==''||consultInfo.consultBegin==''||consultInfo.consultEnd==''">保存</el-button>
@@ -84,6 +81,7 @@
 export default {
   data() {
     return {
+      right: 'right', //表单对齐方式
       //弹出框
       visible: false,
       //分页
@@ -100,8 +98,14 @@ export default {
         {
           doctorId: '1',
           doctorName: '张三',
-          consultBegin: '2020-01-01',
-          consultEnd: '2020-01-02',
+          consultBegin: '2020-01-01 12:00:00',
+          consultEnd: '2020-01-02 12:00:00',
+        },
+        {
+          doctorId: '2',
+          doctorName: '张三',
+          consultBegin: '2020-01-01 12:00:00',
+          consultEnd: '2020-01-02 12:00:00',
         },
       ],
       showTable: true,
@@ -110,8 +114,8 @@ export default {
       consultInfo: {
         doctorId: '', //属性id
         doctorName: '', //属性名
-        consultBegin: '', //三级分类的id
-        consultEnd: '', //因为服务器也需要区分几级id
+        consultBegin: '',
+        consultEnd: '',
       },
     }
   },
@@ -150,14 +154,14 @@ export default {
       this.showTable = false
       this.showId = false
       this.consultInfo.doctorId = row.doctorId
+      this.consultInfo.doctorName = row.doctorName
+      this.consultInfo.consultBegin = row.consultBegin
+      this.consultInfo.consultEnd = row.consultEnd
     },
     //修改或删除
     async addOrupdataAttr() {
       if (this.consultInfo.doctorId != '') {
-        let res = await this.$API.consult.editConsult(
-          this.consultInfo,
-          this.consultInfo.doctorId
-        )
+        let res = await this.$API.consult.editConsult(this.consultInfo)
         console.log(res)
         // if (res.code === 200) {
         //   this.consultList = res.data
@@ -191,5 +195,8 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less" scoped>
+.el-input {
+  width: 300px;
+}
 </style>

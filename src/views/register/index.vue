@@ -4,7 +4,7 @@
 
       <div class="title-container">
         <el-row>
-          <h3 class="title">注册</h3>
+          <h3 class="title active">注册</h3>
         </el-row>
       </div>
 
@@ -15,18 +15,8 @@
         <el-input ref="doctorName" v-model="loginForm.doctorName" placeholder="医生姓名" name="doctorName" type="text" tabindex="1" auto-complete="on" />
       </el-form-item>
 
-      <el-form-item prop="doctorSex">
-        <span class="svg-container">
-          <!-- <svg-icon icon-class="user" /> -->
-        </span>
-        <el-input ref="doctorSex" v-model="loginForm.doctorSex" placeholder="医生性别" name="doctorSex" type="text" tabindex="1" auto-complete="on" />
-      </el-form-item>
-
-      <el-form-item prop="doctorBirthday">
-        <span class="svg-container">
-          <!-- <svg-icon icon-class="user" /> -->
-        </span>
-        <el-input ref="doctorBirthday" v-model="loginForm.doctorBirthday" placeholder="医生生日" name="doctorBirthday" type="text" tabindex="1" auto-complete="on" />
+      <el-form-item>
+        <el-date-picker value-format="yyyy-MM-dd" format="yyyy 年 MM 月 dd 日" type="date" placeholder="医生生日" v-model="loginForm.doctorBirthday" style="width: 100%;"></el-date-picker>
       </el-form-item>
 
       <el-form-item prop="username">
@@ -48,7 +38,7 @@
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;">注册</el-button>
 
-      <el-button :loading="loading" style="width:100%;margin:0 0 30px 0;" @click="$router.push({path:'/login'})">登录</el-button>
+      <el-button :loading="loading" style="width:100%;margin:0 0 30px 0;" @click="$router.push({path:'/login'})">返回</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;">用户名: phoneNumber</span>
@@ -135,6 +125,22 @@ export default {
         }
       })
     },
+    register() {
+      this.$refs.loginForm.validate(async (valid) => {
+        if (valid) {
+          this.loading = true
+          const res = await this.$API.hospitalUser.AdminLogin(this.loginForm)
+          if (res.code == 200) {
+            console.log(res)
+            this.$router.push({ path: this.redirect || '/' })
+            this.loading = false
+          }
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
   },
 }
 </script>
@@ -166,6 +172,32 @@ $cursor: #fff;
       -webkit-appearance: none;
       border-radius: 0px;
       padding: 12px 5px 12px 15px;
+      color: $light_gray;
+      height: 47px;
+      caret-color: $cursor;
+
+      &:-webkit-autofill {
+        box-shadow: 0 0 0px 1000px $bg inset !important;
+        -webkit-text-fill-color: $cursor !important;
+      }
+    }
+  }
+
+  .el-date-editor {
+    display: inline-block;
+    height: 47px;
+    width: 85%;
+
+    .el-input__prefix {
+      padding-left: 5px;
+    }
+
+    .el-input__inner {
+      background: transparent;
+      border: 0px;
+      -webkit-appearance: none;
+      border-radius: 0px;
+      padding: 12px 5px 12px 45px;
       color: $light_gray;
       height: 47px;
       caret-color: $cursor;
@@ -231,20 +263,18 @@ $light_gray: #eee;
     text-align: center;
 
     .title {
-      font-size: 26px;
+      display: inline-block;
+      font-size: 30px;
       color: $light_gray;
-      margin: 0 auto 10px auto;
+      margin: 0 auto 40px auto;
       text-align: center;
       font-weight: bold;
+      cursor: pointer;
     }
-    .title2 {
-      margin: 0 auto 20px auto;
-      text-align: center;
-      font-weight: bold;
-    }
+
     .active {
-      background-color: #409eff;
-      color: #fff;
+      border-bottom: 5px solid #409eff;
+      color: #409eff;
     }
   }
 

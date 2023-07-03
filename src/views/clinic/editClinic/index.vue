@@ -3,6 +3,7 @@
     <el-card class="box-card">
 
       <div v-show="showTable">
+        <span class="tittle">诊室信息表</span>
         <el-form inline style="text-align: center;">
           <!-- 表单元素 -->
           <el-form-item>
@@ -34,14 +35,9 @@
           <el-table-column prop="" label="操作" width="200px">
             <template slot-scope="{row}">
               <el-button type="warning" icon="el-icon-edit" size="mini" @click="updataAttr(row)">修改</el-button>
-              <el-popover placement="top" width="160" v-model="visible">
-                <p> 确定删除这一段内容吗？</p>
-                <div style="text-align: right; margin: 0">
-                  <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-                  <el-button type="primary" size="mini" @click="deleteAttr(row)">确定</el-button>
-                </div>
-                <el-button trigger style="margin-left: 10px;" slot="reference" type="danger" icon="el-icon-delete" size="mini">删除</el-button>
-              </el-popover>
+              <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteAttr(row)">
+                <el-button style="margin-left: 10px;" type="danger" icon="el-icon-delete" size="mini" slot="reference">删除</el-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -52,27 +48,27 @@
 
       <div v-show="!showTable">
         <!-- 行内表单 -->
-        <el-form :inline="true" v-show="!showId">
+        <el-form :label-position="right" label-width="100px" v-show="!showId">
           <el-form-item label="诊室编号">
             {{ clinicInfo.clinicId }}
           </el-form-item>
-        </el-form>
-        <el-form :inline="true">
+
           <el-form-item label="诊室名称">
             <el-input placeholder="请输入诊室名称" v-model="clinicInfo.name"></el-input>
           </el-form-item>
-        </el-form>
-        <el-form :inline="true">
+
           <el-form-item label="诊室介绍">
             <el-input style="width: 400px;" type="textarea" :rows="4" placeholder="请输入诊室介绍" v-model="clinicInfo.introduce"></el-input>
           </el-form-item>
-        </el-form>
-        <el-form :inline="true">
+
           <el-form-item label="诊室所属科室">
-            <el-input placeholder="请输入诊室所属科室" v-model="clinicInfo.department"></el-input>
+            <el-select v-model="clinicInfo.department" clearable placeholder="请输入诊室所属科室">
+              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-form>
-        
+
         <el-button type="primary" icon="el-icon-plus" @click="addOrupdataAttr" :disabled="clinicInfo.name==''||clinicInfo.introduce==''||clinicInfo.department==''">保存</el-button>
         <el-button @click="deleteshowTable">取消</el-button>
       </div>
@@ -84,6 +80,7 @@
 export default {
   data() {
     return {
+      right: 'right', //表单对齐方式
       //弹出框
       visible: false,
       //分页
@@ -125,6 +122,17 @@ export default {
         introduce: '', //三级分类的id
         department: '', //因为服务器也需要区分几级id
       },
+      //下拉框
+      options: [
+        {
+          value: '选项1',
+          label: '内科',
+        },
+        {
+          value: '选项2',
+          label: '呼吸科',
+        },
+      ],
     }
   },
   methods: {
@@ -143,11 +151,7 @@ export default {
       this.page = pages
       const { page, limit } = this
       const searchObj = this.tempSearchObj.username
-      let res = await this.$API.clinic.searchClinic(
-        page,
-        limit,
-        searchObj
-      )
+      let res = await this.$API.clinic.searchClinic(page, limit, searchObj)
       console.log(res)
       // if (res.code === 200) {
       //   this.clinicList = res.data
@@ -166,14 +170,14 @@ export default {
       this.showTable = false
       this.showId = false
       this.clinicInfo.clinicId = row.clinicId
+      this.clinicInfo.name = row.clinicName
+      this.clinicInfo.introduce = row.clinicIntroduce
+      this.clinicInfo.department = row.belongingDepartment
     },
     //修改或删除
     async addOrupdataAttr() {
       if (this.clinicInfo.clinicId != '') {
-        let res = await this.$API.clinic.editClinic(
-          this.clinicInfo,
-          this.clinicInfo.clinicId
-        )
+        let res = await this.$API.clinic.editClinic(this.clinicInfo)
         console.log(res)
         // if (res.code === 200) {
         //   this.clinicList = res.data
@@ -189,9 +193,7 @@ export default {
     //删除
     async deleteAttr(row) {
       this.visible = false
-      let res = await this.$API.clinic.deleteClinic(
-        row.clinicId
-      )
+      let res = await this.$API.clinic.deleteClinic(row.clinicId)
       console.log(res)
       // if (res.code === 200) {
       //   this.clinicList = res.data
@@ -209,5 +211,8 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less" scoped>
+.el-input {
+  width: 300px;
+}
 </style>
