@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card class="box-card">
-      <span class="tittle">科室</span>信息表</span>
+      <span class="tittle">科室信息表</span>
       <el-form inline style="text-align: center;">
         <!-- 表单元素 -->
         <el-form-item>
@@ -17,6 +17,8 @@
           <!-- 序号 -->
           <el-table-column type="index" label="序号" width="80px" align="center">
           </el-table-column>
+          <el-table-column prop="id" label="ID" width="80px" align="center">
+          </el-table-column>
           <!-- departmentName -->
           <el-table-column prop="departmentName" label="科室名称" width="160px">
           </el-table-column>
@@ -26,8 +28,8 @@
         </el-table>
       </div>
 
-      <!-- 分页   @size-change="handleSizeChange" @current-change="getSkuList"      -->
-      <el-pagination style="text-align: center" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
+      <!-- 分页         -->
+      <el-pagination style="text-align: center" @size-change="handleSizeChange" @current-change="getDepartmentList" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
       </el-pagination>
 
     </el-card>
@@ -50,6 +52,7 @@ export default {
       //表格数据
       departmentList: [
         {
+          id:'1',
           departmentName: '内科',
           departmentintroduce: '内科介绍',
         },
@@ -57,17 +60,6 @@ export default {
       ],
       //是否显示表格
       showTable: true,
-
-      //无用数据
-      attrList: [],
-      attrInfo: {
-        attrName: '', //属性名
-        attrValueList: [
-          //属性值，因为属性值可以有多个因此用数组，每一个属性值都是一个对象需要attrId，valueName
-        ],
-        categoryId: 0, //三级分类的id
-        categoryLevel: 3, //因为服务器也需要区分几级id
-      },
     }
   },
   methods: {
@@ -75,11 +67,16 @@ export default {
     async getDepartmentList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.department.getDepartment(page, limit)
+      let res = await this.$API.department.searchDepartment(page, limit, '')
       console.log(res)
-      // if (res.code === 200) {
-      //   this.departmentList = res.data
-      // }
+      if (res.code === 2000) {
+        this.total=res.data.length
+        this.departmentList = res.data
+      }
+    },
+    handleSizeChange(limit){
+      this.limit = limit
+      this.getDepartmentList()
     },
     //搜索
     async search(pages = 1) {
@@ -92,9 +89,9 @@ export default {
         searchObj
       )
       console.log(res)
-      // if (res.code === 200) {
-      //   this.departmentList = res.data
-      // }
+      if (res.code === 2000) {
+        this.departmentList = res.data
+      }
     },
     //清空
     resetSearch() {

@@ -17,6 +17,9 @@
           <!-- 序号 -->
           <el-table-column type="index" label="序号" width="80px" align="center">
           </el-table-column>
+          <!-- ID -->
+          <el-table-column prop="id" label="诊室ID" width="80px" align="center">
+          </el-table-column>
           <!-- 名称 -->
           <el-table-column prop="clinicName" label="诊室名称" width="160px">
           </el-table-column>
@@ -29,8 +32,8 @@
         </el-table>
       </div>
 
-      <!-- 分页   @size-change="handleSizeChange" @current-change="getSkuList"      -->
-      <el-pagination style="text-align: center" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
+      <!-- 分页         -->
+      <el-pagination style="text-align: center" @size-change="handleSizeChange" @current-change="getClinicList" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
       </el-pagination>
 
     </el-card>
@@ -54,16 +57,19 @@ export default {
       //表格数据
       clinicList: [
         {
+          id: 1,
           clinicName: '诊室1',
           clinicIntroduce: '诊室1介绍',
           belongingDepartment: '科室1',
         },
         {
+          id: 2,
           clinicName: '诊室2',
           clinicIntroduce: '诊室2介绍',
           belongingDepartment: '科室2',
         },
         {
+          id: 3,
           clinicName: '诊室3',
           clinicIntroduce: '诊室3介绍',
           belongingDepartment: '科室3',
@@ -77,26 +83,27 @@ export default {
     async getClinicList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.clinic.getClinic(page, limit)
+      let res = await this.$API.clinic.searchClinic(page, limit, '')
       console.log(res)
-      // if (res.code === 200) {
-      //   this.clinicList = res.data
-      // }
+      if (res.code === 2000) {
+        this.total=res.data.length
+        this.clinicList = res.data
+      }
+    },
+    handleSizeChange(limit){
+      this.limit = limit
+      this.getClinicList()
     },
     //搜索
     async search(pages = 1) {
       this.page = pages
       const { page, limit } = this
       const searchObj = this.tempSearchObj.username
-      let res = await this.$API.clinic.searchClinic(
-        page,
-        limit,
-        searchObj
-      )
+      let res = await this.$API.clinic.searchClinic(page, limit, searchObj)
       console.log(res)
-      // if (res.code === 200) {
-      //   this.clinicList = res.data
-      // }
+      if (res.code === 2000) {
+        this.clinicList = res.data
+      }
     },
     //清空
     resetSearch() {

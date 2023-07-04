@@ -8,9 +8,13 @@ export const getConsult = (page, limit) =>
 //查询出诊信息
 export const searchConsult = (page, limit, searchObj) =>
   request({
-    url: `/hospital/consult/${page}/${limit}`,
+    url: `/hospital/consult`,
     method: 'get',
-    data: searchObj,
+    params: {
+      page,
+      limit,
+      searchObj,
+    },
   })
 
 //编辑出诊信息
@@ -22,9 +26,9 @@ export const addConsult = (data) =>
   request({ url: '/hospital/consult', method: 'post', data })
 
 //删除出诊信息
-export const deleteConsult = (consultId) =>
+export const deleteConsult = (id) =>
   request({
     url: '/hospital/consult',
     method: 'delete',
-    data: consultId,
+    data: { id },
   })

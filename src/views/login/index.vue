@@ -32,8 +32,8 @@
         </span>
       </el-form-item>
 
-       <!--  @click="setItem -->
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
+      <!--   @click="setItem"  :loading="loading"-->
+      <el-button  type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="Login">登录</el-button>
       <el-button style="width:100%;margin:0 0 30px 0;" @click="$router.push({path:'/register'})">注册</el-button>
 
       <div class="tips">
@@ -108,58 +108,91 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin() {
-      this.$refs.loginForm.validate((valid) => {
-        if (valid) {
-          this.loading = true
-          this.$store
-            .dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/' })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
+    // handleLogin() {
+    //   this.$refs.loginForm.validate((valid) => {
+    //     if (valid) {
+    //       this.loading = true
+    //       this.$store
+    //         .dispatch('user/login', this.loginForm)
+    //         .then(() => {
+    //           this.$router.push({ path: this.redirect || '/' })
+    //           this.loading = false
+    //         })
+    //         .catch(() => {
+    //           this.loading = false
+    //         })
+    //     } else {
+    //       console.log('error submit!!')
+    //       return false
+    //     }
+    //   })
+    // },
     // 登录
-    login() {
-      if (onShow) {
-        this.$refs.loginForm.validate(async (valid) => {
-          if (valid) {
-            this.loading = true
-            const res = await this.$API.hospitalUser.doctorLogin(this.loginForm)
-            if (res.code == 200) {
-              console.log(res)
-              localStorage.setItem('UUID', res.data.uuid);
-              this.$router.push({ path: this.redirect || '/' })
-              this.loading = false
-            }
-          } else {
-            console.log('error submit!!')
-            return false
-          }
-        })
+    // Login() {
+    //   if (this.onShow) {
+    //     this.$refs.loginForm.validate(async (valid) => {
+    //       if (valid) {
+    //         this.loading = true
+    //         const res = await this.$API.hospitalUser.doctorLogin(this.loginForm)
+    //         if (res.code == 200) {
+    //           console.log(res)
+    //           localStorage.setItem('UUID', res.data.uuid)
+    //           this.$router.push({ path: this.redirect || '/' })
+    //           this.loading = false
+    //         }
+    //       } else {
+    //         console.log('error submit!!')
+    //         return false
+    //       }
+    //     })
+    //   } else {
+    //     this.$refs.loginForm.validate(async (valid) => {
+    //       if (valid) {
+    //         this.loading = true
+    //         const res = await this.$API.hospitalUser.AdminLogin(
+    //           this.loginForm.username,
+    //           this.loginForm.password
+    //         )
+    //         if (res.code == 200) {
+    //           console.log(res)
+    //           this.$router.push({ path: this.redirect || '/' })
+    //           this.loading = false
+    //         }
+    //       } else {
+    //         console.log('error submit!!')
+    //         return false
+    //       }
+    //     })
+    //   }
+    // },
+
+    async Login() {
+      if (this.onShow) {
+        this.loading = true
+        const res = await this.$API.hospitalUser.doctorLogin(
+          this.loginForm.username,
+          this.loginForm.password
+        )
+        if (res.code == 2000) {
+          console.log(res)
+          localStorage.setItem('UUID', res.data.uuid)
+          localStorage.setItem('TOKEN', 'satoken='+res.data.token)
+          this.$router.push({ path: this.redirect || '/' })
+          this.loading = false
+        }
       } else {
-        this.$refs.loginForm.validate(async (valid) => {
-          if (valid) {
-            this.loading = true
-            const res = await this.$API.hospitalUser.doctorSignup(this.loginForm)
-            if (res.code == 200) {
-              console.log(res)
-              this.$router.push({ path: this.redirect || '/' })
-              this.loading = false
-            }
-          } else {
-            console.log('error submit!!')
-            return false
-          }
-        })
+        this.loading = true
+        const res = await this.$API.hospitalUser.AdminLogin(
+          this.loginForm.username,
+          this.loginForm.password
+        )
+        if (res.code == 2000) {
+          console.log(res)
+          localStorage.setItem('UUID', res.data.uuid)
+          localStorage.setItem('TOKEN', 'satoken='+res.data.token)
+          this.$router.push({ path: this.redirect || '/' })
+          this.loading = false
+        }
       }
     },
     onShowChange() {

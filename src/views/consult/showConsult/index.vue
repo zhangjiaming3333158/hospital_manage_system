@@ -29,8 +29,8 @@
         </el-table>
       </div>
 
-      <!-- 分页   @size-change="handleSizeChange" @current-change="getSkuList"      -->
-      <el-pagination style="text-align: center" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
+      <!-- 分页         -->
+      <el-pagination style="text-align: center" @size-change="handleSizeChange" @current-change="getConsultList" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
       </el-pagination>
 
     </el-card>
@@ -53,9 +53,11 @@ export default {
       //表格数据
       consultList: [
         {
+          id: 1,
           doctorName: '张三',
-          consultBegin: '2020-01-01',
-          consultEnd: '2020-01-02',
+          consultBegin: '2023-07-01 09:49:00.0',
+          consultEnd: '2023-07-01 11:49:00.0',
+          uuid: '1',
         },
       ],
       showTable: true,
@@ -66,26 +68,27 @@ export default {
     async getConsultList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.consult.getConsult(page, limit)
+      let res = await this.$API.consult.searchConsult(page, limit, uuid)
       console.log(res)
-      // if (res.code === 200) {
-      //   this.consultList = res.data
-      // }
+      if (res.code === 2000) {
+        this.total=res.data.length
+        this.consultList = res.data
+      }
+    },
+    handleSizeChange(limit) {
+      this.limit = limit
+      this.getConsultList()
     },
     //搜索
     async search(pages = 1) {
       this.page = pages
       const { page, limit } = this
       const searchObj = this.tempSearchObj.username
-      let res = await this.$API.consult.searchConsult(
-        page,
-        limit,
-        searchObj
-      )
+      let res = await this.$API.consult.searchConsult(page, limit, searchObj)
       console.log(res)
-      // if (res.code === 200) {
-      //   this.consultList = res.data
-      // }
+      if (res.code === 2000) {
+        this.consultList = res.data
+      }
     },
     //清空
     resetSearch() {

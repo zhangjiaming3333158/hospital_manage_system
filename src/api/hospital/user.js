@@ -1,18 +1,24 @@
 import request from '@/utils/request'
 
-export function AdminLogin(data) {
+export function AdminLogin(phone, password) {
   return request({
     url: '/hospital/login/admin',
     method: 'get',
-    data
+    params:{
+      phone,
+      password
+    }
   })
 }
 
-export function doctorLogin(data) {
+export function doctorLogin(phone, password) {
   return request({
     url: '/hospital/login/doctor',
     method: 'get',
-    data
+    params:{
+      phone,
+      password
+    }
   })
 }
 

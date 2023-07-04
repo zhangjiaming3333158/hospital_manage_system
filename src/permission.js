@@ -68,7 +68,7 @@ router.beforeEach(async (to, from, next) => {
   // determine whether the user has logged in
   
   let uuid = localStorage.getItem('UUID')
-  console.log(uuid);
+  // console.log(uuid);
 
   if (uuid) {
     if (to.path === '/login' || to.path === '/register') {

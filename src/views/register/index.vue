@@ -36,7 +36,7 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;">注册</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click="register">注册</el-button>
 
       <el-button :loading="loading" style="width:100%;margin:0 0 30px 0;" @click="$router.push({path:'/login'})">返回</el-button>
 
@@ -106,30 +106,30 @@ export default {
         this.$refs.password.focus()
       })
     },
-    handleLogin() {
-      this.$refs.loginForm.validate((valid) => {
-        if (valid) {
-          this.loading = true
-          this.$store
-            .dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/' })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
+    // handleLogin() {
+    //   this.$refs.loginForm.validate((valid) => {
+    //     if (valid) {
+    //       this.loading = true
+    //       this.$store
+    //         .dispatch('user/login', this.loginForm)
+    //         .then(() => {
+    //           this.$router.push({ path: this.redirect || '/' })
+    //           this.loading = false
+    //         })
+    //         .catch(() => {
+    //           this.loading = false
+    //         })
+    //     } else {
+    //       console.log('error submit!!')
+    //       return false
+    //     }
+    //   })
+    // },
     register() {
       this.$refs.loginForm.validate(async (valid) => {
         if (valid) {
           this.loading = true
-          const res = await this.$API.hospitalUser.AdminLogin(this.loginForm)
+          const res = await this.$API.hospitalUser.doctorSignup(this.loginForm)
           if (res.code == 200) {
             console.log(res)
             this.$router.push({ path: this.redirect || '/' })

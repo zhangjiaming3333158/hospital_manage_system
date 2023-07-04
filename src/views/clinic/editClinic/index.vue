@@ -22,6 +22,9 @@
           <!-- 序号 -->
           <el-table-column type="index" label="序号" width="80px" align="center">
           </el-table-column>
+          <!-- ID -->
+          <el-table-column prop="id" label="诊室ID" width="80px" align="center">
+          </el-table-column>
           <!-- 名称 -->
           <el-table-column prop="clinicName" label="诊室名称" width="160px">
           </el-table-column>
@@ -41,35 +44,35 @@
             </template>
           </el-table-column>
         </el-table>
-        <!-- 分页   @size-change="handleSizeChange" @current-change="getSkuList"      -->
-        <el-pagination style="text-align: center" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
+        <!-- 分页     -->
+        <el-pagination style="text-align: center" @size-change="handleSizeChange" @current-change="getClinicList" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
         </el-pagination>
       </div>
 
       <div v-show="!showTable">
         <!-- 行内表单 -->
-        <el-form :label-position="right" label-width="100px" v-show="!showId">
-          <el-form-item label="诊室编号">
-            {{ clinicInfo.clinicId }}
+        <el-form :label-position="right" label-width="100px">
+          <el-form-item label="诊室ID" v-show="!showId">
+            {{ clinicInfo.id }}
           </el-form-item>
 
           <el-form-item label="诊室名称">
-            <el-input placeholder="请输入诊室名称" v-model="clinicInfo.name"></el-input>
+            <el-input style="width: 400px;" placeholder="请输入诊室介绍" v-model="clinicInfo.clinicName"></el-input>
           </el-form-item>
 
           <el-form-item label="诊室介绍">
-            <el-input style="width: 400px;" type="textarea" :rows="4" placeholder="请输入诊室介绍" v-model="clinicInfo.introduce"></el-input>
+            <el-input style="width: 400px;" type="textarea" :rows="4" placeholder="请输入诊室介绍" v-model="clinicInfo.clinicIntroduce"></el-input>
           </el-form-item>
 
           <el-form-item label="诊室所属科室">
-            <el-select v-model="clinicInfo.department" clearable placeholder="请输入诊室所属科室">
+            <el-select v-model="clinicInfo.belongingDepartment" clearable placeholder="请输入诊室所属科室">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
         </el-form>
 
-        <el-button type="primary" icon="el-icon-plus" @click="addOrupdataAttr" :disabled="clinicInfo.name==''||clinicInfo.introduce==''||clinicInfo.department==''">保存</el-button>
+        <el-button type="primary" icon="el-icon-plus" @click="addOrupdataAttr" :disabled="clinicInfo.clinicName==''||clinicInfo.clinicIntroduce==''||clinicInfo.belongingDepartment==''">保存</el-button>
         <el-button @click="deleteshowTable">取消</el-button>
       </div>
     </el-card>
@@ -95,19 +98,19 @@ export default {
       //表格数据
       clinicList: [
         {
-          clinicId: '1',
+          id: '1',
           clinicName: '诊室1',
           clinicIntroduce: '诊室1介绍',
           belongingDepartment: '科室1',
         },
         {
-          clinicId: '2',
+          id: '2',
           clinicName: '诊室2',
           clinicIntroduce: '诊室2介绍',
           belongingDepartment: '科室2',
         },
         {
-          clinicId: '3',
+          id: '3',
           clinicName: '诊室3',
           clinicIntroduce: '诊室3介绍',
           belongingDepartment: '科室3',
@@ -117,10 +120,10 @@ export default {
       showTable: true,
       //收集新增属性|修改属性使用的
       clinicInfo: {
-        clinicId: '', //属性id
-        name: '', //属性名
-        introduce: '', //三级分类的id
-        department: '', //因为服务器也需要区分几级id
+        id: '', //id
+        clinicName: '', //属性名
+        clinicIntroduce: '', //三级分类的id
+        belongingDepartment: '', //因为服务器也需要区分几级id
       },
       //下拉框
       options: [
@@ -140,11 +143,17 @@ export default {
     async getClinicList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.clinic.getClinic(page, limit)
+      let res = await this.$API.clinic.searchClinic(page, limit, '')
       console.log(res)
-      // if (res.code === 200) {
-      //   this.clinicList = res.data
-      // }
+      if (res.code === 2000) {
+        this.total=res.data.length
+        this.clinicList = res.data
+      }
+    },
+    //分页
+    handleSizeChange(limit) {
+      this.limit = limit
+      this.getClinicList()
     },
     //搜索
     async search(pages = 1) {
@@ -153,9 +162,9 @@ export default {
       const searchObj = this.tempSearchObj.username
       let res = await this.$API.clinic.searchClinic(page, limit, searchObj)
       console.log(res)
-      // if (res.code === 200) {
-      //   this.clinicList = res.data
-      // }
+      if (res.code === 2000) {
+        this.clinicList = res.data
+      }
     },
     //清空
     resetSearch() {
@@ -164,45 +173,64 @@ export default {
     //转到添加页面
     showAddUser() {
       this.showTable = false
+      this.showId = true
     },
     //修改
     updataAttr(row) {
       this.showTable = false
       this.showId = false
-      this.clinicInfo.clinicId = row.clinicId
-      this.clinicInfo.name = row.clinicName
-      this.clinicInfo.introduce = row.clinicIntroduce
-      this.clinicInfo.department = row.belongingDepartment
+      this.clinicInfo.id = row.id
+      this.clinicInfo.clinicName = row.clinicName
+      this.clinicInfo.clinicIntroduce = row.clinicIntroduce
+      this.clinicInfo.belongingDepartment = row.belongingDepartment
     },
-    //修改或删除
+    //修改或添加
     async addOrupdataAttr() {
-      if (this.clinicInfo.clinicId != '') {
+      if (this.clinicInfo.id != '') {
         let res = await this.$API.clinic.editClinic(this.clinicInfo)
         console.log(res)
-        // if (res.code === 200) {
-        //   this.clinicList = res.data
-        // }
+        if (res.code === 2000) {
+          this.clinicList = res.data
+          this.$message({
+            type: 'success',
+            message: '保存成功',
+          })
+          this.showTable = true
+          this.showId = false
+          this.getClinicList()
+        }
       } else {
         let res = await this.$API.clinic.editClinic(this.clinicInfo)
         console.log(res)
-        // if (res.code === 200) {
-        //   this.clinicList = res.data
-        // }
+        if (res.code === 2000) {
+          this.clinicList = res.data
+          this.$message({
+            type: 'success',
+            message: '修改成功',
+          })
+          this.showTable = true
+          this.showId = false
+          this.getClinicList()
+        }
       }
     },
     //删除
     async deleteAttr(row) {
       this.visible = false
-      let res = await this.$API.clinic.deleteClinic(row.clinicId)
+      let res = await this.$API.clinic.deleteClinic(row.id)
       console.log(res)
-      // if (res.code === 200) {
-      //   this.clinicList = res.data
-      // }
+      if (res.code === 2000) {
+        this.clinicList = res.data
+      }
     },
     //取消
     deleteshowTable() {
       this.showTable = true
       this.showId = false
+      this.clinicInfo.id = ''
+      this.clinicInfo.clinicName = ''
+      this.clinicInfo.clinicIntroduce = ''
+      this.clinicInfo.belongingDepartment = ''
     },
   },
   mounted() {

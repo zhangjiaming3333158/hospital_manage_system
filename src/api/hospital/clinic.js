@@ -8,9 +8,13 @@ export const getClinic = (page, limit) =>
 //查询诊室信息
 export const searchClinic = (page, limit, searchObj) =>
   request({
-    url: `/hospital/clinic/${page}/${limit}`,
+    url: `/hospital/clinic`,
     method: 'get',
-    data: searchObj,
+    params: {
+      page,
+      limit,
+      searchObj,
+    },
   })
 
 //编辑诊室信息
@@ -22,9 +26,9 @@ export const addClinic = (data) =>
   request({ url: '/hospital/clinic', method: 'post', data })
 
 //删除诊室信息
-export const deleteClinic = (clinicId) =>
+export const deleteClinic = (id) =>
   request({
     url: '/hospital/clinic',
     method: 'delete',
-    data: clinicId,
+    data: { id },
   })

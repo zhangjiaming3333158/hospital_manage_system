@@ -21,6 +21,9 @@
           <!-- 序号 -->
           <el-table-column type="index" label="序号" width="80px" align="center">
           </el-table-column>
+          <!-- ID -->
+          <el-table-column prop="id" label="科室ID" width="80px" align="center">
+          </el-table-column>
           <!-- departmentName -->
           <el-table-column prop="departmentName" label="科室名称" width="160px">
           </el-table-column>
@@ -39,16 +42,16 @@
             </template>
           </el-table-column>
         </el-table>
-        <!-- 分页   @size-change="handleSizeChange" @current-change="getSkuList"      -->
-        <el-pagination style="text-align: center" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
+        <!-- 分页         -->
+        <el-pagination style="text-align: center" @size-change="handleSizeChange" @current-change="getDepartmentList" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
         </el-pagination>
       </div>
 
       <div v-show="!showTable">
         <!-- 行内表单 -->
-        <el-form :label-position="right" label-width="100px" v-show="!showId">
-          <el-form-item label="科室编号">
-            {{ departmentInfo.departmentNameId }}
+        <el-form :label-position="right" label-width="100px">
+          <el-form-item label="科室编号" v-show="!showId">
+            {{ departmentInfo.id }}
           </el-form-item>
 
           <el-form-item label="科室名称">
@@ -85,12 +88,12 @@ export default {
       //表格数据
       departmentList: [
         {
-          departmentNameId: 1,
+          id: 1,
           departmentName: '内科1',
           departmentintroduce: '内科介绍1',
         },
         {
-          departmentNameId: 2,
+          id: 2,
           departmentName: '内科2',
           departmentintroduce: '内科介绍2',
         },
@@ -100,7 +103,7 @@ export default {
       showId: true,
       //添加或修改
       departmentInfo: {
-        departmentNameId: '', //属性名
+        id: '', //属性名
         departmentName: '', //属性名
         departmentIntroduce: '', //属性名
       },
@@ -111,11 +114,16 @@ export default {
     async getDepartmentList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.department.getDepartment(page, limit)
+      let res = await this.$API.department.searchDepartment(page, limit, '')
       console.log(res)
-      // if (res.code === 200) {
-      //   this.departmentList = res.data
-      // }
+      if (res.code === 2000) {
+        this.total=res.data.length
+        this.departmentList = res.data
+      }
+    },
+    handleSizeChange(limit) {
+      this.limit = limit
+      this.getDepartmentList()
     },
     //搜索
     async search(pages = 1) {
@@ -128,9 +136,9 @@ export default {
         searchObj
       )
       console.log(res)
-      // if (res.code === 200) {
-      //   this.departmentList = res.data
-      // }
+      if (res.code === 2000) {
+        this.departmentList = res.data
+      }
     },
     //清空
     resetSearch() {
@@ -144,41 +152,58 @@ export default {
     updataAttr(row) {
       this.showTable = false
       this.showId = false
-      this.departmentInfo.departmentNameId = row.departmentNameId
+      this.departmentInfo.id = row.id
       this.departmentInfo.departmentName = row.departmentName
       this.departmentInfo.departmentIntroduce = row.departmentintroduce
     },
-    //修改或删除
+    //修改或添加
     async addOrupdataAttr() {
-      if (this.departmentInfo.departmentNameId != '') {
+      if (this.departmentInfo.id != '') {
         let res = await this.$API.department.editDepartment(this.departmentInfo)
         console.log(res)
-        // if (res.code === 200) {
-        //   this.departmentList = res.data
-        // }
+        if (res.code === 2000) {
+          this.departmentList = res.data
+          this.$message({
+            type: 'success',
+            message: '保存成功',
+          })
+          this.showTable = true
+          this.showId = true
+          this.getDepartmentList()
+        }
       } else {
         let res = await this.$API.department.addDepartment(this.departmentInfo)
         console.log(res)
-        // if (res.code === 200) {
-        //   this.departmentList = res.data
-        // }
+        if (res.code === 2000) {
+          this.departmentList = res.data
+          this.$message({
+            type: 'success',
+            message: '修改成功',
+          })
+          this.showTable = true
+          this.showId = true
+          this.getDepartmentList()
+        }
       }
     },
     //删除
     async deleteAttr(row) {
       this.visible = false
       let res = await this.$API.department.deleteDepartment(
-        row.departmentNameId
+        row.id
       )
       console.log(res)
-      // if (res.code === 200) {
-      //   this.departmentList = res.data
-      // }
+      if (res.code === 2000) {
+        this.departmentList = res.data
+      }
     },
     //取消
     deleteshowTable() {
       this.showTable = true
       this.showId = false
+      this.departmentInfo.id = ''
+      this.departmentInfo.departmentName = ''
+      this.departmentInfo.departmentIntroduce = ''
     },
   },
   mounted() {

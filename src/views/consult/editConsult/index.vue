@@ -21,6 +21,9 @@
           <!-- 序号 -->
           <el-table-column type="index" label="序号" width="80px" align="center">
           </el-table-column>
+          <!-- ID -->
+          <el-table-column prop="id" label="出诊ID" width="80px" align="center">
+          </el-table-column>
           <!-- doctorName -->
           <el-table-column prop="doctorName" label="医生姓名" width="160px">
           </el-table-column>
@@ -43,15 +46,15 @@
           </el-table-column>
         </el-table>
         <!-- 分页   @size-change="handleSizeChange" @current-change="getSkuList"      -->
-        <el-pagination style="text-align: center" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
+        <el-pagination style="text-align: center" @size-change="handleSizeChange" @current-change="getConsultList" :current-page="page" :page-sizes="[3, 5, 10]" :page-size="limit" layout="prev, pager, next, jumper,->,sizes,total" :total="total">
         </el-pagination>
       </div>
 
       <div v-show="!showTable">
         <!-- 行内表单 -->
-        <el-form :label-position="right" label-width="100px" v-show="!showId">
-          <el-form-item label="医生编号">
-            {{ consultInfo.doctorId }}
+        <el-form :label-position="right" label-width="100px">
+          <el-form-item label="出诊编号" v-show="!showId">
+            {{ consultInfo.id }}
           </el-form-item>
 
           <el-form-item label="医生姓名">
@@ -96,26 +99,29 @@ export default {
       //表格数据
       consultList: [
         {
-          doctorId: '1',
+          id: 1,
           doctorName: '张三',
-          consultBegin: '2020-01-01 12:00:00',
-          consultEnd: '2020-01-02 12:00:00',
+          consultBegin: '2023-07-01 09:49:00.0',
+          consultEnd: '2023-07-01 11:49:00.0',
+          uuid: '1',
         },
         {
-          doctorId: '2',
+          id: 2,
           doctorName: '张三',
-          consultBegin: '2020-01-01 12:00:00',
-          consultEnd: '2020-01-02 12:00:00',
+          consultBegin: '2023-07-01 09:49:00.0',
+          consultEnd: '2023-07-01 11:49:00.0',
+          uuid: '2',
         },
       ],
       showTable: true,
       showId: true,
       //收集新增属性|修改属性使用的
       consultInfo: {
-        doctorId: '', //属性id
-        doctorName: '', //属性名
+        id: '',
+        doctorName: '',
         consultBegin: '',
         consultEnd: '',
+        uuid: '',
       },
     }
   },
@@ -124,11 +130,16 @@ export default {
     async getConsultList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.consult.getConsult(page, limit)
+      let res = await this.$API.consult.searchConsult(page, limit, '')
       console.log(res)
-      // if (res.code === 200) {
-      //   this.consultList = res.data
-      // }
+      if (res.code === 2000) {
+        this.total=res.data.length
+        this.consultList = res.data
+      }
+    },
+    handleSizeChange(limit) {
+      this.limit = limit
+      this.getConsultList()
     },
     //搜索
     async search(pages = 1) {
@@ -137,9 +148,9 @@ export default {
       const searchObj = this.tempSearchObj.username
       let res = await this.$API.consult.searchConsult(page, limit, searchObj)
       console.log(res)
-      // if (res.code === 200) {
-      //   this.consultList = res.data
-      // }
+      if (res.code === 2000) {
+        this.consultList = res.data
+      }
     },
     //清空
     resetSearch() {
@@ -148,45 +159,65 @@ export default {
     //转到添加页面
     showAddUser() {
       this.showTable = false
+      this.showId = true
     },
     //修改
     updataAttr(row) {
       this.showTable = false
       this.showId = false
-      this.consultInfo.doctorId = row.doctorId
+      this.consultInfo.id = row.id
       this.consultInfo.doctorName = row.doctorName
       this.consultInfo.consultBegin = row.consultBegin
       this.consultInfo.consultEnd = row.consultEnd
+      this.consultInfo.uuid = row.uuid
     },
-    //修改或删除
+    //修改或添加
     async addOrupdataAttr() {
       if (this.consultInfo.doctorId != '') {
         let res = await this.$API.consult.editConsult(this.consultInfo)
         console.log(res)
-        // if (res.code === 200) {
-        //   this.consultList = res.data
-        // }
+        if (res.code === 2000) {
+          this.consultList = res.data
+          this.$message({
+            type: 'success',
+            message: '保存成功',
+          })
+          this.showTable = true
+          this.showId = true
+          this.getConsultList()
+        }
       } else {
         let res = await this.$API.consult.addConsult(this.consultInfo)
         console.log(res)
-        // if (res.code === 200) {
-        //   this.consultList = res.data
-        // }
+        if (res.code === 2000) {
+          this.consultList = res.data
+          this.$message({
+            type: 'success',
+            message: '保存成功',
+          })
+          this.showTable = true
+          this.showId = true
+          this.getConsultList()
+        }
       }
     },
     //删除
     async deleteAttr(row) {
       this.visible = false
-      let res = await this.$API.consult.deleteConsult(row.doctorId)
+      let res = await this.$API.consult.deleteConsult(row.id)
       console.log(res)
-      // if (res.code === 200) {
-      //   this.consultList = res.data
-      // }
+      if (res.code === 2000) {
+        this.consultList = res.data
+      }
     },
     //取消
     deleteshowTable() {
       this.showTable = true
       this.showId = false
+      this.consultInfo.doctorId = ''
+      this.consultInfo.doctorName = ''
+      this.consultInfo.consultBegin = ''
+      this.consultInfo.consultEnd = ''
     },
   },
   mounted() {

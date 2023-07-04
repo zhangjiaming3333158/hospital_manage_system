@@ -8,9 +8,13 @@ export const getDepartment = (page, limit) =>
 //查询科室信息
 export const searchDepartment = (page, limit, searchObj) =>
   request({
-    url: `/hospital/department/${page}/${limit}`,
+    url: `/hospital/department`,
     method: 'get',
-    data: searchObj,
+    params: {
+      page,
+      limit,
+      searchObj,
+    },
   })
 
 //编辑科室信息
@@ -26,9 +30,9 @@ export const addDepartment = (data) =>
   request({ url: '/hospital/department', method: 'post', data })
 
 //删除科室信息
-export const deleteDepartment = (departmentNameId) =>
+export const deleteDepartment = (id) =>
   request({
     url: '/hospital/department',
     method: 'delete',
-    data: departmentNameId,
+    data: { id },
   })
