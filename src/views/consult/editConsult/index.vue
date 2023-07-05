@@ -9,7 +9,7 @@
             <el-input style="width: 300px;" v-model="tempSearchObj.username" placeholder="用户名" />
           </el-form-item>
           <!-- 查询与情况的按钮 -->
-          <el-button type="primary" icon="el-icon-search" @click="search">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="search()">查询</el-button>
           <el-button type="default" @click="resetSearch">清空</el-button>
         </el-form>
         <div style="margin-bottom: 20px">
@@ -62,12 +62,12 @@
           </el-form-item>
 
           <el-form-item label="出诊开始时间">
-            <el-date-picker style="width: 350px;" v-model="consultInfo.consultBegin" type="datetime" placeholder="出诊开始时间" format="yyyy 年 MM 月 dd 日 hh 时 mm 分 ss 秒" value-format="yyyy-MM-dd hh-mm-ss">
+            <el-date-picker style="width: 350px;" v-model="consultInfo.consultBegin" type="datetime" placeholder="出诊开始时间" format="yyyy 年 MM 月 dd 日 hh 时 mm 分 ss 秒" value-format="yyyy-MM-dd hh:mm:ss">
             </el-date-picker>
           </el-form-item>
 
           <el-form-item label="出诊结束时间">
-            <el-date-picker style="width: 350px;" v-model="consultInfo.consultEnd" type="datetime" placeholder="出诊开始时间" format="yyyy 年 MM 月 dd 日 hh 时 mm 分 ss 秒" value-format="yyyy-MM-dd hh-mm-ss">
+            <el-date-picker style="width: 350px;" v-model="consultInfo.consultEnd" type="datetime" placeholder="出诊开始时间" format="yyyy 年 MM 月 dd 日 hh 时 mm 分 ss 秒" value-format="yyyy-MM-dd hh:mm:ss">
             </el-date-picker>
           </el-form-item>
 
@@ -130,7 +130,7 @@ export default {
     async getConsultList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.consult.searchConsult(page, limit, '')
+      let res = await this.$API.consult.searchConsult(page, limit)
       console.log(res)
       if (res.code === 2000) {
         this.total=res.data.length
@@ -173,7 +173,8 @@ export default {
     },
     //修改或添加
     async addOrupdataAttr() {
-      if (this.consultInfo.doctorId != '') {
+      
+      if (this.consultInfo.id != '') {
         let res = await this.$API.consult.editConsult(this.consultInfo)
         console.log(res)
         if (res.code === 2000) {
@@ -187,7 +188,11 @@ export default {
           this.getConsultList()
         }
       } else {
-        let res = await this.$API.consult.addConsult(this.consultInfo)
+        const addc = this.consultInfo
+        delete addc.id
+        console.log(addc);
+        console.log(1);
+        let res = await this.$API.consult.addConsult(addc)
         console.log(res)
         if (res.code === 2000) {
           this.consultList = res.data
@@ -207,7 +212,7 @@ export default {
       let res = await this.$API.consult.deleteConsult(row.id)
       console.log(res)
       if (res.code === 2000) {
-        this.consultList = res.data
+        this.getConsultList()
       }
     },
     //取消
@@ -222,6 +227,8 @@ export default {
   },
   mounted() {
     this.getConsultList()
+    this.consultInfo.uuid = localStorage.getItem('UUID')
+    console.log(this.consultInfo.uuid);
   },
 }
 </script>

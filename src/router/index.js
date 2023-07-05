@@ -67,7 +67,52 @@ export const constantRoutes = [
       },
     ],
   },
-  //个人中心
+]
+
+//异步理由:不同的用户（角色），需要过滤筛选出的路由，称之为异步路由
+//有的用户可以看见测试管理、有的看不见
+export const asyncRoutes = [
+  // {
+  //   name: 'Acl',
+  //   path: '/acl',
+  //   component: Layout,
+  //   // redirect: '/acl/user/list',
+  //   meta: {
+  //     title: '权限管理',
+  //     icon: 'el-icon-lock',
+  //   },
+  //   children: [
+  //     {
+  //       name: 'User',
+  //       path: 'user/list',
+  //       component: () => import('@/views/acl/user/list'),
+  //       meta: {
+  //         title: '权限管理',
+  //       },
+  //     },
+
+  //     // {
+  //     //   name: 'Role',
+  //     //   path: 'role/list',
+  //     //   component: () => import('@/views/acl/role/list'),
+  //     //   meta: {
+  //     //     title: '角色管理',
+  //     //   },
+  //     // },
+
+  //     // {
+  //     //   name: 'RoleAuth',
+  //     //   path: 'role/auth/:id',
+  //     //   component: () => import('@/views/acl/role/roleAuth'),
+  //     //   meta: {
+  //     //     activeMenu: '/acl/role/list',
+  //     //     title: '角色授权',
+  //     //   },
+  //     //   hidden: true,
+  //     // },
+  //   ],
+  // },
+  //医生管理
   {
     path: '/doctor',
     component: Layout,
@@ -155,46 +200,21 @@ export const constantRoutes = [
       },
     ],
   },
-]
-
-//异步理由:不同的用户（角色），需要过滤筛选出的路由，称之为异步路由
-//有的用户可以看见测试管理、有的看不见
-export const asyncRoutes = [
+  // 权限管理
   {
-    name: 'Acl',
-    path: '/acl',
+    path: '/authority',
+    name: 'Authority',
     component: Layout,
-    redirect: '/acl/user/list',
-    meta: {
-      title: '权限管理',
-      icon: 'el-icon-lock',
-    },
+    // redirect: '/consult',
+    meta: { title: '权限管理', icon: 'el-icon-lock' },
     children: [
       {
-        name: 'User',
-        path: 'user/list',
-        component: () => import('@/views/acl/user/list'),
+        path: '/list',
+        name: 'List',
+        component: () => import('@/views/authority/List/index.vue'),
         meta: {
           title: '权限管理',
         },
-      },
-      // {
-      //   name: 'Role',
-      //   path: 'role/list',
-      //   component: () => import('@/views/acl/role/list'),
-      //   meta: {
-      //     title: '角色管理',
-      //   },
-      // },
-      {
-        name: 'RoleAuth',
-        path: 'role/auth/:id',
-        component: () => import('@/views/acl/role/roleAuth'),
-        meta: {
-          activeMenu: '/acl/role/list',
-          title: '角色授权',
-        },
-        hidden: true,
       },
     ],
   },

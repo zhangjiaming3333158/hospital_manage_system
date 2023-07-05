@@ -9,7 +9,7 @@
             <el-input v-model="tempSearchObj.username" placeholder="查询值" />
           </el-form-item>
           <!-- 查询与情况的按钮 -->
-          <el-button type="primary" icon="el-icon-search" @click="search">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="search()">查询</el-button>
           <el-button type="default" @click="resetSearch">清空</el-button>
         </el-form>
         <div style="margin-bottom: 20px">
@@ -27,8 +27,8 @@
           <!-- departmentName -->
           <el-table-column prop="departmentName" label="科室名称" width="160px">
           </el-table-column>
-          <!-- departmentintroduce -->
-          <el-table-column prop="departmentintroduce" label="科室介绍" width="width">
+          <!-- departmentIntroduce -->
+          <el-table-column prop="departmentIntroduce" label="科室介绍" width="width">
           </el-table-column>
           <!-- 操作 -->
           <el-table-column prop="" label="操作" width="200px">
@@ -90,12 +90,12 @@ export default {
         {
           id: 1,
           departmentName: '内科1',
-          departmentintroduce: '内科介绍1',
+          departmentIntroduce: '内科介绍1',
         },
         {
           id: 2,
           departmentName: '内科2',
-          departmentintroduce: '内科介绍2',
+          departmentIntroduce: '内科介绍2',
         },
       ],
       //是否显示表格
@@ -114,7 +114,7 @@ export default {
     async getDepartmentList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.department.searchDepartment(page, limit, '')
+      let res = await this.$API.department.searchDepartment(page, limit)
       console.log(res)
       if (res.code === 2000) {
         this.total=res.data.length
@@ -154,7 +154,7 @@ export default {
       this.showId = false
       this.departmentInfo.id = row.id
       this.departmentInfo.departmentName = row.departmentName
-      this.departmentInfo.departmentIntroduce = row.departmentintroduce
+      this.departmentInfo.departmentIntroduce = row.departmentIntroduce
     },
     //修改或添加
     async addOrupdataAttr() {
@@ -194,7 +194,7 @@ export default {
       )
       console.log(res)
       if (res.code === 2000) {
-        this.departmentList = res.data
+        this.getDepartmentList()
       }
     },
     //取消

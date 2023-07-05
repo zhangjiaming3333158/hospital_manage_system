@@ -27,6 +27,7 @@ const getDefaultState = () => {
     // resultAsyncRoutes: [],
     //用户最终需要展示全部路由
     // resultAllRputes: [],
+    resultRoutes: [],
   }
 }
 
@@ -67,6 +68,11 @@ const mutations = {
   //   //给路由器添加新的路由
   //   router.addRoutes(state.resultAllRputes)
   // },
+
+  //路由
+  TOGGLE_SIDEBAR: (state, router) => {
+    state.resultRoutes = router
+  },
 }
 
 //定义一个函数：两个数组进行对比，对比出当前用户到底显示哪些异步路由
@@ -101,6 +107,15 @@ const actions = {
     } else {
       return Promise.reject(new Error('faile'))
     }
+  },
+
+  //计算出当前用户需要展示的路由
+  computeRoutes({ commit }) {
+    const resultRoutes = constantRoutes.concat(asyncRoutes, anyRoutes)
+    console.log('asyncRoutes', asyncRoutes)
+    //给路由器添加新的路由
+    router.addRoutes(resultRoutes)
+    commit('TOGGLE_SIDEBAR', resultRoutes)
   },
 
   //获取用户信息

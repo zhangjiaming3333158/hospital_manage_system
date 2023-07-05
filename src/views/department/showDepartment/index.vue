@@ -22,8 +22,8 @@
           <!-- departmentName -->
           <el-table-column prop="departmentName" label="科室名称" width="160px">
           </el-table-column>
-          <!-- departmentintroduce -->
-          <el-table-column prop="departmentintroduce" label="科室介绍" width="width">
+          <!-- departmentIntroduce -->
+          <el-table-column prop="departmentIntroduce" label="科室介绍" width="width">
           </el-table-column>
         </el-table>
       </div>
@@ -54,7 +54,7 @@ export default {
         {
           id:'1',
           departmentName: '内科',
-          departmentintroduce: '内科介绍',
+          departmentIntroduce: '内科介绍',
         },
         {},
       ],
@@ -67,7 +67,7 @@ export default {
     async getDepartmentList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.department.searchDepartment(page, limit, '')
+      let res = await this.$API.department.searchDepartment(page, limit)
       console.log(res)
       if (res.code === 2000) {
         this.total=res.data.length

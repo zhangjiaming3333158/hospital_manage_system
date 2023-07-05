@@ -114,15 +114,15 @@ export default {
       // 获取json存放在doctorlist里面
       doctorList: [
         {
-          id: 1,
-          name: '黄羽',
-          birthday: '1989-01-01',
-          identificationNumber: '330782198901012311',
-          phoneNumber: '18649375880',
-          appointmentFee: 300,
-          introduce: '呼吸内科主治医生,10年的治疗经验',
-          belongingDepartment: '呯吸科',
-          uuid: 111,
+          // id: 1,
+          // name: '黄羽',
+          // birthday: '1989-01-01',
+          // identificationNumber: '330782198901012311',
+          // phoneNumber: '18649375880',
+          // appointmentFee: 300,
+          // introduce: '呼吸内科主治医生,10年的治疗经验',
+          // belongingDepartment: '呯吸科',
+          // uuid: 111,
         },
       ],
       //搜索条件
@@ -160,7 +160,7 @@ export default {
     async getDoctorList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.doctor.searchDoctor(page, limit, '', '')
+      let res = await this.$API.doctor.searchDoctorAll(page, limit)
       console.log(res)
       if (res.code === 2000) {
         this.total=res.data.length
@@ -176,7 +176,7 @@ export default {
       this.page = pages
       const { page, limit } = this
       const searchObj = this.tempSearchObj.username
-      let res = await this.$API.doctor.searchDoctor(page, limit, searchObj, '')
+      let res = await this.$API.doctor.searchDoctor(page, limit, searchObj)
       console.log(res)
       if (res.code === 2000) {
         this.doctorList = res.data
@@ -207,7 +207,7 @@ export default {
     },
     //修改或添加
     async addOrupdataAttr() {
-      if (this.doctorInfo.doctorId != '') {
+      if (this.doctorInfo.id != '') {
         let res = await this.$API.doctor.editDoctor(this.doctorInfo)
         console.log(res)
         if (res.code === 2000) {
@@ -240,17 +240,21 @@ export default {
     //删除
     async deleteAttr(row) {
       this.visible = false
-      let res = await this.$API.doctor.deleteDoctor(row.doctorId)
+      let res = await this.$API.doctor.deleteDoctor(row.id)
       console.log(res)
       if (res.code === 2000) {
-        this.doctorList = res.data
+        this.getDoctorList()
+        this.$message({
+          type: 'success',
+          message: '删除成功',
+        })
       }
     },
     //取消
     deleteshowTable() {
       this.showTable = true
       this.showId = false
-      this.doctorInfo.doctorId = ''
+      this.doctorInfo.id = ''
       this.doctorInfo.name = ''
       this.doctorInfo.introduce = ''
       this.doctorInfo.department = ''

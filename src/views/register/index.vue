@@ -8,17 +8,6 @@
         </el-row>
       </div>
 
-      <el-form-item prop="doctorName">
-        <span class="svg-container">
-          <!-- <svg-icon icon-class="user" /> -->
-        </span>
-        <el-input ref="doctorName" v-model="loginForm.doctorName" placeholder="医生姓名" name="doctorName" type="text" tabindex="1" auto-complete="on" />
-      </el-form-item>
-
-      <el-form-item>
-        <el-date-picker value-format="yyyy-MM-dd" format="yyyy 年 MM 月 dd 日" type="date" placeholder="医生生日" v-model="loginForm.doctorBirthday" style="width: 100%;"></el-date-picker>
-      </el-form-item>
-
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -38,7 +27,7 @@
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click="register">注册</el-button>
 
-      <el-button :loading="loading" style="width:100%;margin:0 0 30px 0;" @click="$router.push({path:'/login'})">返回</el-button>
+      <el-button style="width:100%;margin:0 0 30px 0;" @click="$router.push({path:'/login'})">返回</el-button>
 
       <div class="tips">
         <span style="margin-right:20px;">用户名: phoneNumber</span>
@@ -71,7 +60,7 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
+        username: '12345678901',
         password: '111111',
       },
       loginRules: {
@@ -125,21 +114,18 @@ export default {
     //     }
     //   })
     // },
-    register() {
-      this.$refs.loginForm.validate(async (valid) => {
-        if (valid) {
-          this.loading = true
-          const res = await this.$API.hospitalUser.doctorSignup(this.loginForm)
-          if (res.code == 200) {
-            console.log(res)
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+    async register() {
+      this.loading = true
+      const res = await this.$API.hospitalUser.doctorSignup(
+        this.loginForm.username,
+        this.loginForm.password
+      )
+      if (res.code == 2000) {
+        console.log(res)
+        localStorage.setItem('UUID', res.data)
+        this.$router.push({ path: this.redirect || '/' })
+        this.loading = false
+      }
     },
   },
 }

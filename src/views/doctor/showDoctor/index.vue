@@ -4,9 +4,13 @@
       <div v-show="showTable">
         <span class="tittle">个人信息表</span>
 
-        <div style="margin: 20px 0">
+        <div style="margin: 20px 0" v-show="doctorList.length>0">
           <!-- 添加与批量添加按钮 -->
           <el-button type="success" icon="el-icon-edit" @click="updataAttr">修改个人信息</el-button>
+        </div>
+        <div style="margin: 20px 0" v-show="doctorList.length==0">
+          <!-- 添加与批量添加按钮 -->
+          <el-button type="warning" icon="el-icon-plus" @click="updataAttr">增加个人信息</el-button>
         </div>
         <!-- 表格 -->
         <el-table :data="doctorList" border style="width: 100%;">
@@ -37,7 +41,7 @@
         <!-- 行内表单 -->
         <el-form :label-position="right" label-width="100px" :model="doctorInfo">
 
-          <el-form-item label="医生ID">
+          <el-form-item label="医生ID" v-show="this.doctorList.length != 0">
             {{ doctorInfo.id }}
           </el-form-item>
 
@@ -58,8 +62,8 @@
             <el-input placeholder="请输入医生手机号" v-model="doctorInfo.phoneNumber"></el-input>
           </el-form-item>
 
-          <el-form-item label="医生薪水">
-            {{ doctorInfo.appointmentFee }}
+          <el-form-item label="医生挂号费">
+            <el-input placeholder="请输入医生挂号费" v-model="doctorInfo.appointmentFee" type="number"></el-input>
           </el-form-item>
 
           <el-form-item label="医生介绍">
@@ -97,15 +101,15 @@ export default {
       // 获取json存放在doctorlist里面
       doctorList: [
         {
-          id: 1,
-          name: '黄羽',
-          birthday: '1989-01-01',
-          identificationNumber: '330782198901012311',
-          phoneNumber: '18649375880',
-          appointmentFee: 300,
-          introduce: '呼吸内科主治医生,10年的治疗经验',
-          belongingDepartment: '呯吸科',
-          uuid: 111,
+          // id: 1,
+          // name: '黄羽',
+          // birthday: '1989-01-01',
+          // identificationNumber: '330782198901012311',
+          // phoneNumber: '18649375880',
+          // appointmentFee: 300,
+          // introduce: '呼吸内科主治医生,10年的治疗经验',
+          // belongingDepartment: '呯吸科',
+          // uuid: 111,
         },
       ],
       //搜索条件
@@ -115,7 +119,7 @@ export default {
       },
       //收集新增属性|修改属性使用的
       doctorInfo: {
-        id: '',
+        uuid: '',
         name: '',
         birthday: '',
         identificationNumber: '',
@@ -123,17 +127,20 @@ export default {
         appointmentFee: '',
         introduce: '',
         belongingDepartment: '',
-        uuid: '',
       },
       //下拉框
       options: [
         {
-          value: '选项1',
+          value: '内科',
           label: '内科',
         },
         {
-          value: '选项2',
+          value: '呼吸科',
           label: '呼吸科',
+        },
+        {
+          value: '儿科',
+          label: '儿科',
         },
       ],
     }
@@ -144,10 +151,10 @@ export default {
       this.page = pages
       const { page, limit } = this
       const uuid = localStorage.getItem('UUID')
-      let res = await this.$API.doctor.searchDoctor(page, limit, '', uuid)
+      let res = await this.$API.doctor.searchDoctorUUID(page, limit, uuid)
       console.log(res)
       if (res.code === 2000) {
-        this.total=res.data.length
+        this.total = res.data.length
         this.doctorList = res.data
       }
     },
@@ -164,43 +171,50 @@ export default {
     updataAttr() {
       this.showTable = false
       this.showId = false
-      this.doctorInfo.id = this.doctorList[0].id
-      this.doctorInfo.identificationNumber = this.doctorList[0].identificationNumber
-      this.doctorInfo.name = this.doctorList[0].name
-      this.doctorInfo.introduce = this.doctorList[0].introduce
-      this.doctorInfo.belongingDepartment = this.doctorList[0].belongingDepartment
-      this.doctorInfo.birthday = this.doctorList[0].birthday
-      this.doctorInfo.phoneNumber = this.doctorList[0].phoneNumber
-      this.doctorInfo.appointmentFee = this.doctorList[0].appointmentFee
-      this.doctorInfo.uuid = this.doctorList[0].uuid
+      if (this.doctorList.length == 0) {
+        this.$message({
+          type: 'warning',
+          message: '请先添加医生',
+        })
+      } else {
+        this.doctorInfo.id = this.doctorList[0].id || ''
+        this.doctorInfo.identificationNumber =
+          this.doctorList[0].identificationNumber
+        this.doctorInfo.name = this.doctorList[0].name
+        this.doctorInfo.introduce = this.doctorList[0].introduce
+        this.doctorInfo.belongingDepartment =
+          this.doctorList[0].belongingDepartment
+        this.doctorInfo.birthday = this.doctorList[0].birthday
+        this.doctorInfo.phoneNumber = this.doctorList[0].phoneNumber
+        this.doctorInfo.appointmentFee = this.doctorList[0].appointmentFee
+        this.doctorInfo.uuid = this.doctorList[0].uuid
+      }
     },
-    //修改或删除
+    //修改或添加
     async addOrupdataAttr() {
-      if (this.doctorInfo.doctorId != '') {
+      if (this.doctorInfo.id != '') {
         let res = await this.$API.doctor.editDoctor(this.doctorInfo)
         console.log(res)
         if (res.code === 2000) {
-          this.doctorList = res.data
-          this.departmentList = res.data
           this.$message({
             type: 'success',
             message: '保存成功',
           })
           this.showTable = true
           this.showId = true
+          this.getDoctorList()
         }
       } else {
-        let res = await this.$API.doctor.editDoctor(this.doctorInfo)
+        let res = await this.$API.doctor.addDoctor(this.doctorInfo)
         console.log(res)
         if (res.code === 2000) {
-          this.doctorList = res.data
-          this.departmentList = res.data
           this.$message({
             type: 'success',
             message: '保存成功',
           })
           this.showTable = true
           this.showId = true
+          this.getDoctorList()
         }
       }
     },
@@ -212,6 +226,7 @@ export default {
   },
   mounted() {
     this.getDoctorList()
+    this.doctorInfo.uuid = localStorage.getItem('UUID')
   },
 }
 </script>

@@ -6,29 +6,29 @@ export const getClinic = (page, limit) =>
   request({ url: `/hospital/clinic/${page}/${limit}`, method: 'get' })
 
 //查询诊室信息
-export const searchClinic = (page, limit, searchObj) =>
+export const searchClinic = (page, limit, name) =>
   request({
-    url: `/hospital/clinic`,
+    url: `/dev2-api/hospital/clinic`,
     method: 'get',
     params: {
       page,
       limit,
-      searchObj,
+      name,
     },
   })
 
 //编辑诊室信息
 export const editClinic = (data) =>
-  request({ url: `/hospital/clinic`, method: 'put', data })
+  request({ url: `/dev2-api/hospital/clinic`, method: 'put', data })
 
 //增加诊室信息
 export const addClinic = (data) =>
-  request({ url: '/hospital/clinic', method: 'post', data })
+  request({ url: '/dev2-api/hospital/clinic', method: 'post', data })
 
 //删除诊室信息
 export const deleteClinic = (id) =>
   request({
-    url: '/hospital/clinic',
+    url: '/dev2-api/hospital/clinic',
     method: 'delete',
     data: { id },
   })

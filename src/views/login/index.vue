@@ -69,7 +69,7 @@ export default {
       onShow: true,
       offShow: false,
       loginForm: {
-        username: 'admin',
+        username: '12345678900',
         password: '111111',
       },
       loginRules: {

@@ -128,12 +128,16 @@ export default {
       //下拉框
       options: [
         {
-          value: '选项1',
+          value: '内科',
           label: '内科',
         },
         {
-          value: '选项2',
+          value: '呼吸科',
           label: '呼吸科',
+        },
+        {
+          value: '儿科',
+          label: '儿科',
         },
       ],
     }
@@ -143,7 +147,7 @@ export default {
     async getClinicList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.clinic.searchClinic(page, limit, '')
+      let res = await this.$API.clinic.searchClinic(page, limit)
       console.log(res)
       if (res.code === 2000) {
         this.total=res.data.length
@@ -200,7 +204,10 @@ export default {
           this.getClinicList()
         }
       } else {
-        let res = await this.$API.clinic.editClinic(this.clinicInfo)
+        const addc = this.clinicInfo
+        delete addc.id
+        console.log(addc);
+        let res = await this.$API.clinic.addClinic(addc)
         console.log(res)
         if (res.code === 2000) {
           this.clinicList = res.data
@@ -220,7 +227,7 @@ export default {
       let res = await this.$API.clinic.deleteClinic(row.id)
       console.log(res)
       if (res.code === 2000) {
-        this.clinicList = res.data
+        this.getClinicList()
       }
     },
     //取消

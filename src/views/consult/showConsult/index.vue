@@ -8,7 +8,7 @@
           <el-input style="width: 300px;" v-model="tempSearchObj.username" placeholder="用户名" />
         </el-form-item>
         <!-- 查询与情况的按钮 -->
-        <el-button type="primary" icon="el-icon-search" @click="search">查询</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="search()">查询</el-button>
         <el-button type="default" @click="resetSearch">清空</el-button>
       </el-form>
       <div v-show="showTable">
@@ -67,11 +67,11 @@ export default {
     //获取表格数据
     async getConsultList(pages = 1) {
       this.page = pages
-      const { page, limit } = this
+      const { page, limit, uuid } = this
       let res = await this.$API.consult.searchConsult(page, limit, uuid)
       console.log(res)
       if (res.code === 2000) {
-        this.total=res.data.length
+        this.total = res.data.length
         this.consultList = res.data
       }
     },
