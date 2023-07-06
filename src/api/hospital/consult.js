@@ -5,15 +5,48 @@ import request from '@/utils/request'
 export const getConsult = (page, limit) =>
   request({ url: `/dev2-api/hospital/consult/${page}/${limit}`, method: 'get' })
 
-//查询出诊信息
-export const searchConsult = (page, limit, name) =>
+//查询医生UUID出诊信息
+export const searchConsultUUID = (page, limit, uuid) =>
   request({
     url: `/dev2-api/hospital/consult`,
     method: 'get',
     params: {
       page,
       limit,
-      name,
+      uuid,
+    },
+  })
+//查询患者出诊信息
+export const searchConsultPatient = (page, limit, uuid, patientName) =>
+  request({
+    url: `/dev2-api/hospital/consult`,
+    method: 'get',
+    params: {
+      page,
+      limit,
+      uuid,
+      patientName,
+    },
+  })
+//查询all出诊信息
+export const searchConsultAllDoctor = (page, limit) =>
+  request({
+    url: `/dev2-api/hospital/consult`,
+    method: 'get',
+    params: {
+      page,
+      limit,
+    },
+  })
+//查询医生出诊信息
+export const searchConsultDoctor = (page, limit, doctorName) =>
+  request({
+    url: `/dev2-api/hospital/consult`,
+    method: 'get',
+    params: {
+      page,
+      limit,
+      doctorName,
     },
   })
 

@@ -7,6 +7,7 @@ import * as clinic from './hospital/clinic'
 import * as consult from './hospital/consult'
 import * as doctor from './hospital/doctor'
 import * as hospitalUser from './hospital/user'
+import * as picture from './hospital/picture'
 
 export default {
   permission,
@@ -16,5 +17,6 @@ export default {
   clinic,
   consult,
   doctor,
-  hospitalUser
+  hospitalUser,
+  picture
 }

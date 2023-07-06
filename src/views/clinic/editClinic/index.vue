@@ -126,20 +126,7 @@ export default {
         belongingDepartment: '', //因为服务器也需要区分几级id
       },
       //下拉框
-      options: [
-        {
-          value: '内科',
-          label: '内科',
-        },
-        {
-          value: '呼吸科',
-          label: '呼吸科',
-        },
-        {
-          value: '儿科',
-          label: '儿科',
-        },
-      ],
+      options: [],
     }
   },
   methods: {
@@ -150,8 +137,8 @@ export default {
       let res = await this.$API.clinic.searchClinic(page, limit)
       console.log(res)
       if (res.code === 2000) {
-        this.total=res.data.length
-        this.clinicList = res.data
+        this.total = res.data.pageNum
+        this.clinicList = res.data.content
       }
     },
     //分页
@@ -167,12 +154,13 @@ export default {
       let res = await this.$API.clinic.searchClinic(page, limit, searchObj)
       console.log(res)
       if (res.code === 2000) {
-        this.clinicList = res.data
+        this.clinicList = res.data.content
       }
     },
     //清空
     resetSearch() {
       this.tempSearchObj.username = ''
+      this.getClinicList()
     },
     //转到添加页面
     showAddUser() {
@@ -194,7 +182,7 @@ export default {
         let res = await this.$API.clinic.editClinic(this.clinicInfo)
         console.log(res)
         if (res.code === 2000) {
-          this.clinicList = res.data
+          // this.clinicList = res.data.content
           this.$message({
             type: 'success',
             message: '保存成功',
@@ -206,11 +194,11 @@ export default {
       } else {
         const addc = this.clinicInfo
         delete addc.id
-        console.log(addc);
+        console.log(addc)
         let res = await this.$API.clinic.addClinic(addc)
         console.log(res)
         if (res.code === 2000) {
-          this.clinicList = res.data
+          // this.clinicList = res.data.content
           this.$message({
             type: 'success',
             message: '修改成功',
@@ -239,9 +227,26 @@ export default {
       this.clinicInfo.clinicIntroduce = ''
       this.clinicInfo.belongingDepartment = ''
     },
+    //计算options
+    async computeOptions() {
+      let res1 = await this.$API.department.searchDepartment()
+      if (res1.code === 2000) {
+        this.res = res1.data
+        for (let i = 0; i < this.res.length; i++) {
+          this.options.push({
+            value: this.res[i],
+            label: this.res[i],
+          })
+        }
+      }
+    },
+  },
+  computed: {
+    //计算属性
   },
   mounted() {
     this.getClinicList()
+    this.computeOptions()
   },
 }
 </script>

@@ -25,7 +25,7 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click="register">注册</el-button>
+      <el-button type="primary" style="width:100%;margin-bottom:30px;" @click="handleRegister">注册</el-button>
 
       <el-button style="width:100%;margin:0 0 30px 0;" @click="$router.push({path:'/login'})">返回</el-button>
 
@@ -45,8 +45,13 @@ export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
+      // if (!validUsername(value)) {
+      //   callback(new Error('请输入正确的用户名'))
+      // } else {
+      //   callback()
+      // }
+      if (value.length != 11) {
+        callback(new Error('手机号输入错误'))
       } else {
         callback()
       }
@@ -95,25 +100,26 @@ export default {
         this.$refs.password.focus()
       })
     },
-    // handleLogin() {
-    //   this.$refs.loginForm.validate((valid) => {
-    //     if (valid) {
-    //       this.loading = true
-    //       this.$store
-    //         .dispatch('user/login', this.loginForm)
-    //         .then(() => {
-    //           this.$router.push({ path: this.redirect || '/' })
-    //           this.loading = false
-    //         })
-    //         .catch(() => {
-    //           this.loading = false
-    //         })
-    //     } else {
-    //       console.log('error submit!!')
-    //       return false
-    //     }
-    //   })
-    // },
+    handleRegister() {
+      this.$refs.loginForm.validate(async (valid) => {
+        if (valid) {
+          this.loading = true
+          const res = await this.$API.hospitalUser.doctorSignup(
+            this.loginForm.username,
+            this.loginForm.password
+          )
+          if (res.code == 2000) {
+            console.log(res)
+            localStorage.setItem('UUID', res.data)
+            this.$router.push({ path: this.redirect || '/' })
+            this.loading = false
+          }
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
     async register() {
       this.loading = true
       const res = await this.$API.hospitalUser.doctorSignup(

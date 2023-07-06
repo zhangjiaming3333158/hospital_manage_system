@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import { get } from 'js-cookie'
 export default {
   data() {
     return {
@@ -86,8 +87,8 @@ export default {
       let res = await this.$API.clinic.searchClinic(page, limit)
       console.log(res)
       if (res.code === 2000) {
-        this.total=res.data.length
-        this.clinicList = res.data
+        this.total=res.data.pageNum
+        this.clinicList = res.data.content
       }
     },
     handleSizeChange(limit){
@@ -102,12 +103,14 @@ export default {
       let res = await this.$API.clinic.searchClinic(page, limit, searchObj)
       console.log(res)
       if (res.code === 2000) {
-        this.clinicList = res.data
+        this.clinicList = res.data.content
       }
     },
     //清空
     resetSearch() {
+      console.log(this.clinicList);
       this.tempSearchObj.username = ''
+      this.getClinicList()
     },
   },
   mounted() {

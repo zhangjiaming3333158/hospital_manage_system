@@ -48,7 +48,7 @@ module.exports = {
         pathRewrite: { '^/dev1-api': '' },
       },
       '/dev2-api': {
-        target: 'http://10.252.33.7:9999',
+        target: 'http://192.168.235.158:9999',
         pathRewrite: { '^/dev2-api': '' },
       },
     },

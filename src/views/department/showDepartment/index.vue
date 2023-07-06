@@ -70,8 +70,8 @@ export default {
       let res = await this.$API.department.searchDepartment(page, limit)
       console.log(res)
       if (res.code === 2000) {
-        this.total=res.data.length
-        this.departmentList = res.data
+        this.total=res.data.pageNum
+        this.departmentList = res.data.content
       }
     },
     handleSizeChange(limit){
@@ -90,12 +90,13 @@ export default {
       )
       console.log(res)
       if (res.code === 2000) {
-        this.departmentList = res.data
+        this.departmentList = res.data.content
       }
     },
     //清空
     resetSearch() {
       this.tempSearchObj.username = ''
+      this.getDepartmentList()
     },
   },
   mounted(){

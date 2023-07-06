@@ -30,7 +30,7 @@
           </el-table-column>
           <el-table-column fixed prop="phoneNumber" label="手机号" width="130">
           </el-table-column>
-          <el-table-column fixed prop="appointmentFee" label="薪水" width="80">
+          <el-table-column fixed prop="appointmentFee" label="挂号费" width="80">
           </el-table-column>
           <el-table-column fixed prop="introduce" label="介绍" width="width">
           </el-table-column>
@@ -39,8 +39,15 @@
           <el-table-column prop="" label="操作" width="200px">
             <template slot-scope="{row}">
               <el-button type="warning" icon="el-icon-edit" size="mini" @click="updataAttr(row)">修改</el-button>
-              <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteAttr(row)">
-                <el-button style="margin-left: 10px;" type="danger" icon="el-icon-delete" size="mini" slot="reference">删除</el-button>
+              <el-popconfirm title="这是一段内容确定删除吗？" 
+              @onConfirm="deleteAttr(row)">
+                <el-button style="margin-left: 10px;" 
+                type="danger" 
+                icon="el-icon-delete" 
+                size="mini" 
+                slot="reference">
+                删除
+                </el-button>
               </el-popconfirm>
             </template>
           </el-table-column>
@@ -53,36 +60,28 @@
       <div v-show="!showTable">
         <!-- 行内表单 -->
         <el-form :label-position="right" label-width="100px" :model="doctorInfo">
-
           <el-form-item label="医生ID">
             {{ doctorInfo.id }}
           </el-form-item>
-
           <el-form-item label="医生名称">
             <el-input placeholder="请输入医生名称" v-model="doctorInfo.name"></el-input>
           </el-form-item>
-
           <el-form-item label="医生生日">
             <el-date-picker v-model="doctorInfo.birthday" type="date" placeholder="请输入医生生日" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-form-item>
-
           <el-form-item label="医生身份证号">
             <el-input placeholder="请输入医生身份证号" v-model="doctorInfo.identificationNumber"></el-input>
           </el-form-item>
-
           <el-form-item label="医生手机号">
             <el-input placeholder="请输入医生手机号" v-model="doctorInfo.phoneNumber"></el-input>
           </el-form-item>
-
-          <el-form-item label="医生薪水">
-            <el-input placeholder="请输入医生薪水" v-model="doctorInfo.appointmentFee"></el-input>
+          <el-form-item label="医生挂号费">
+            <el-input placeholder="请输入医生挂号费" v-model="doctorInfo.appointmentFee"></el-input>
           </el-form-item>
-
           <el-form-item label="医生介绍">
             <el-input style="width: 400px;" type="textarea" :rows="4" placeholder="请输入医生介绍" v-model="doctorInfo.introduce"></el-input>
           </el-form-item>
-
           <el-form-item label="医生所属科室">
             <el-select v-model="doctorInfo.belongingDepartment" clearable placeholder="请输入医生所属科室">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
@@ -132,7 +131,7 @@ export default {
       },
       //收集新增属性|修改属性使用的
       doctorInfo: {
-        id: '',
+        uuid: '',
         name: '',
         birthday: '',
         identificationNumber: '',
@@ -140,18 +139,10 @@ export default {
         appointmentFee: '',
         introduce: '',
         belongingDepartment: '',
-        uuid: '',
       },
       //下拉框
       options: [
-        {
-          value: '选项1',
-          label: '内科',
-        },
-        {
-          value: '选项2',
-          label: '呼吸科',
-        },
+
       ],
     }
   },
@@ -163,8 +154,8 @@ export default {
       let res = await this.$API.doctor.searchDoctorAll(page, limit)
       console.log(res)
       if (res.code === 2000) {
-        this.total=res.data.length
-        this.doctorList = res.data
+        this.total=res.data.pageNum
+        this.doctorList = res.data.content
       }
     },
     handleSizeChange(limit) {
@@ -176,15 +167,16 @@ export default {
       this.page = pages
       const { page, limit } = this
       const searchObj = this.tempSearchObj.username
-      let res = await this.$API.doctor.searchDoctor(page, limit, searchObj)
+      let res = await this.$API.doctor.searchDoctorNAME(page, limit, searchObj)
       console.log(res)
       if (res.code === 2000) {
-        this.doctorList = res.data
+        this.doctorList = res.data.content
       }
     },
     //清空
     resetSearch() {
       this.tempSearchObj.username = ''
+      this.getDoctorList()
     },
     //转到添加页面
     showAddUser() {
@@ -195,6 +187,7 @@ export default {
       this.showTable = false
       this.showId = false
       console.log(row)
+      // this.doctorInfo = row
       this.doctorInfo.id = row.id
       this.doctorInfo.identificationNumber = row.identificationNumber
       this.doctorInfo.name = row.name
@@ -204,6 +197,7 @@ export default {
       this.doctorInfo.phoneNumber = row.phoneNumber
       this.doctorInfo.appointmentFee = row.appointmentFee
       this.doctorInfo.uuid = row.uuid
+      
     },
     //修改或添加
     async addOrupdataAttr() {
@@ -211,8 +205,6 @@ export default {
         let res = await this.$API.doctor.editDoctor(this.doctorInfo)
         console.log(res)
         if (res.code === 2000) {
-          this.doctorList = res.data
-          this.departmentList = res.data
           this.$message({
             type: 'success',
             message: '保存成功',
@@ -225,8 +217,6 @@ export default {
         let res = await this.$API.doctor.editDoctor(this.doctorInfo)
         console.log(res)
         if (res.code === 2000) {
-          this.doctorList = res.data
-          this.departmentList = res.data
           this.$message({
             type: 'success',
             message: '保存成功',
@@ -259,9 +249,23 @@ export default {
       this.doctorInfo.introduce = ''
       this.doctorInfo.department = ''
     },
+    //计算options
+    async computeOptions() {
+      let res1 = await this.$API.department.searchDepartment()
+      if (res1.code === 2000) {
+        this.res = res1.data
+        for (let i = 0; i < this.res.length; i++) {
+          this.options.push({
+            value: this.res[i],
+            label: this.res[i],
+          })
+        }
+      }
+    },
   },
   mounted() {
     this.getDoctorList()
+    this.computeOptions()
   },
 }
 </script>

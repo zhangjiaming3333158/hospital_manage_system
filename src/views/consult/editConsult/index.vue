@@ -27,6 +27,9 @@
           <!-- doctorName -->
           <el-table-column prop="doctorName" label="医生姓名" width="160px">
           </el-table-column>
+          <!-- patientName -->
+          <el-table-column prop="patientName" label="患者姓名" width="160px">
+          </el-table-column>
           <!-- consultBegin -->
           <el-table-column prop="consultBegin" label="出诊开始时间" width="width">
           </el-table-column>
@@ -61,6 +64,10 @@
             <el-input placeholder="请输入医生姓名" v-model="consultInfo.doctorName"></el-input>
           </el-form-item>
 
+          <el-form-item label="患者姓名">
+            <el-input placeholder="请输入患者姓名" v-model="consultInfo.patientName"></el-input>
+          </el-form-item>
+
           <el-form-item label="出诊开始时间">
             <el-date-picker style="width: 350px;" v-model="consultInfo.consultBegin" type="datetime" placeholder="出诊开始时间" format="yyyy 年 MM 月 dd 日 hh 时 mm 分 ss 秒" value-format="yyyy-MM-dd hh:mm:ss">
             </el-date-picker>
@@ -81,6 +88,7 @@
 </template>
 
 <script>
+import { logger } from 'runjs/lib/common'
 export default {
   data() {
     return {
@@ -101,6 +109,7 @@ export default {
         {
           id: 1,
           doctorName: '张三',
+          patientName: '李四',
           consultBegin: '2023-07-01 09:49:00.0',
           consultEnd: '2023-07-01 11:49:00.0',
           uuid: '1',
@@ -108,6 +117,7 @@ export default {
         {
           id: 2,
           doctorName: '张三',
+          patientName: '李四',
           consultBegin: '2023-07-01 09:49:00.0',
           consultEnd: '2023-07-01 11:49:00.0',
           uuid: '2',
@@ -119,6 +129,7 @@ export default {
       consultInfo: {
         id: '',
         doctorName: '',
+        patientName: '',
         consultBegin: '',
         consultEnd: '',
         uuid: '',
@@ -130,31 +141,39 @@ export default {
     async getConsultList(pages = 1) {
       this.page = pages
       const { page, limit } = this
-      let res = await this.$API.consult.searchConsult(page, limit)
+      let res = await this.$API.consult.searchConsultAllDoctor(
+        page,
+        limit,
+      )
       console.log(res)
       if (res.code === 2000) {
-        this.total=res.data.length
-        this.consultList = res.data
+        this.total = res.data.pageNum
+        this.consultList = res.data.content
       }
     },
     handleSizeChange(limit) {
       this.limit = limit
       this.getConsultList()
     },
-    //搜索
+    //管理员搜索医生信息
     async search(pages = 1) {
       this.page = pages
       const { page, limit } = this
       const searchObj = this.tempSearchObj.username
-      let res = await this.$API.consult.searchConsult(page, limit, searchObj)
+      let res = await this.$API.consult.searchConsultDoctor(
+        page,
+        limit,
+        searchObj
+      )
       console.log(res)
       if (res.code === 2000) {
-        this.consultList = res.data
+        this.consultList = res.data.content
       }
     },
     //清空
     resetSearch() {
       this.tempSearchObj.username = ''
+      this.getConsultList()
     },
     //转到添加页面
     showAddUser() {
@@ -167,18 +186,19 @@ export default {
       this.showId = false
       this.consultInfo.id = row.id
       this.consultInfo.doctorName = row.doctorName
+      this.consultInfo.patientName = row.patientName
       this.consultInfo.consultBegin = row.consultBegin
       this.consultInfo.consultEnd = row.consultEnd
       this.consultInfo.uuid = row.uuid
     },
     //修改或添加
     async addOrupdataAttr() {
-      
       if (this.consultInfo.id != '') {
+        console.log(this.consultInfo);
         let res = await this.$API.consult.editConsult(this.consultInfo)
         console.log(res)
         if (res.code === 2000) {
-          this.consultList = res.data
+          // this.consultList = res.data.content
           this.$message({
             type: 'success',
             message: '保存成功',
@@ -190,12 +210,11 @@ export default {
       } else {
         const addc = this.consultInfo
         delete addc.id
-        console.log(addc);
-        console.log(1);
+        console.log(addc)
         let res = await this.$API.consult.addConsult(addc)
         console.log(res)
         if (res.code === 2000) {
-          this.consultList = res.data
+          // this.consultList = res.data.content
           this.$message({
             type: 'success',
             message: '保存成功',
@@ -219,8 +238,9 @@ export default {
     deleteshowTable() {
       this.showTable = true
       this.showId = false
-      this.consultInfo.doctorId = ''
+      this.consultInfo.id = ''
       this.consultInfo.doctorName = ''
+      this.consultInfo.patientName = ''
       this.consultInfo.consultBegin = ''
       this.consultInfo.consultEnd = ''
     },
@@ -228,7 +248,7 @@ export default {
   mounted() {
     this.getConsultList()
     this.consultInfo.uuid = localStorage.getItem('UUID')
-    console.log(this.consultInfo.uuid);
+    console.log(this.consultInfo.uuid)
   },
 }
 </script>
